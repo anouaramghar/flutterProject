@@ -2,7 +2,7 @@ name: flutter_application
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -35,8 +35,22 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
 
-dev_dependencies:
+  # State Management
   provider: ^6.1.2
+
+  # Maps & Location
+  google_maps_flutter: ^2.5.0
+  geolocator: ^10.1.0
+
+  # Database
+  sqflite: ^2.3.0
+  path: ^1.8.3
+
+  # Utilities
+  url_launcher: ^6.2.1
+  cached_network_image: ^3.3.0
+
+dev_dependencies:
   flutter_test:
     sdk: flutter
 
@@ -58,10 +72,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/data/places.json
-    - assets/images/ 
-   
-    
-    
+    - assets/images/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

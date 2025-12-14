@@ -1,0 +1,718 @@
+{
+  "places": [
+    {
+      "id": 1,
+      "name": "Mosquée Hassan II",
+      "city": "Casablanca",
+      "category": "Monument",
+      "description": "La Mosquée Hassan II est l'une des plus grandes mosquées du monde et la plus grande d'Afrique. Son minaret de 210 mètres est le plus haut du monde. Située au bord de l'océan Atlantique, elle offre une architecture mauresque époustouflante avec des artisanats marocains traditionnels.",
+      "lat": 33.6086,
+      "lng": -7.6328,
+      "images": [
+        "https://images.unsplash.com/photo-1569383746724-6f1b882b8f46?w=800"
+      ],
+      "rating": 4.8,
+      "hours": "09:00-18:00"
+    },
+    {
+      "id": 2,
+      "name": "Place Jemaa el-Fna",
+      "city": "Marrakech",
+      "category": "Place",
+      "description": "Le cœur battant de Marrakech, cette place mythique est un spectacle permanent : conteurs, musiciens, charmeurs de serpents, vendeurs de jus d'orange et stands de nourriture. Inscrite au patrimoine mondial de l'UNESCO.",
+      "lat": 31.6258,
+      "lng": -7.9891,
+      "images": [
+        "https://images.unsplash.com/photo-1489749798305-4fea3ae63d43?w=800"
+      ],
+      "rating": 4.7,
+      "hours": "24h/24"
+    },
+    {
+      "id": 3,
+      "name": "Médina de Fès",
+      "city": "Fès",
+      "category": "Médina",
+      "description": "Fès el-Bali est la plus ancienne et la plus grande médina du monde arabe. Ses ruelles labyrinthiques abritent des souks traditionnels, des tanneries historiques et l'université Al Quaraouiyine, la plus ancienne au monde.",
+      "lat": 34.0625,
+      "lng": -4.9738,
+      "images": [
+        "https://images.unsplash.com/photo-1545041087-5e58db7b2b8c?w=800"
+      ],
+      "rating": 4.9,
+      "hours": "06:00-22:00"
+    },
+    {
+      "id": 4,
+      "name": "Jardin Majorelle",
+      "city": "Marrakech",
+      "category": "Jardin",
+      "description": "Créé par le peintre français Jacques Majorelle et restauré par Yves Saint Laurent, ce jardin botanique est célèbre pour son bleu intense. Il abrite une collection de cactus et de plantes exotiques du monde entier.",
+      "lat": 31.6417,
+      "lng": -8.0034,
+      "images": [
+        "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=800"
+      ],
+      "rating": 4.6,
+      "hours": "08:00-18:00",
+      "price": 150
+    },
+    {
+      "id": 5,
+      "name": "Kasbah des Oudayas",
+      "city": "Rabat",
+      "category": "Monument",
+      "description": "Cette forteresse du XIIe siècle surplombe l'embouchure du fleuve Bouregreg. Ses ruelles bleu et blanc, ses jardins andalous et sa vue sur l'océan en font un lieu incontournable de la capitale.",
+      "lat": 34.0323,
+      "lng": -6.8346,
+      "images": [
+        "https://images.unsplash.com/photo-1581009137042-c552e485697a?w=800"
+      ],
+      "rating": 4.5,
+      "hours": "08:00-18:00"
+    },
+    {
+      "id": 6,
+      "name": "Erg Chebbi",
+      "city": "Merzouga",
+      "category": "Désert",
+      "description": "Les dunes orangées d'Erg Chebbi atteignent 150 mètres de hauteur. Ce désert offre des expériences inoubliables : balades en dromadaire, nuits en bivouac, lever de soleil sur les dunes.",
+      "lat": 31.1494,
+      "lng": -3.9733,
+      "images": [
+        "https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=800"
+      ],
+      "rating": 4.9,
+      "hours": "24h/24"
+    },
+    {
+      "id": 7,
+      "name": "Plage de Legzira",
+      "city": "Sidi Ifni",
+      "category": "Plage",
+      "description": "Célèbre pour ses arches rocheuses naturelles sculptées par l'érosion, cette plage sauvage offre des couchers de soleil spectaculaires. Un lieu prisé des photographes et surfeurs.",
+      "lat": 29.4381,
+      "lng": -10.1181,
+      "images": [
+        "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800"
+      ],
+      "rating": 4.7,
+      "hours": "24h/24"
+    },
+    {
+      "id": 8,
+      "name": "Chefchaouen",
+      "city": "Chefchaouen",
+      "category": "Ville",
+      "description": "La 'Perle Bleue du Maroc' est connue pour ses maisons et ruelles peintes en bleu. Nichée dans les montagnes du Rif, cette ville offre une atmosphère paisible et des panoramas montagneux.",
+      "lat": 35.1688,
+      "lng": -5.2636,
+      "images": [
+        "https://images.unsplash.com/photo-1553522991-71439aa62779?w=800"
+      ],
+      "rating": 4.8,
+      "hours": "24h/24"
+    },
+    {
+      "id": 9,
+      "name": "Aït Benhaddou",
+      "city": "Ouarzazate",
+      "category": "Monument",
+      "description": "Ce ksar fortifié en terre est inscrit au patrimoine mondial de l'UNESCO. Il a servi de décor à de nombreux films hollywoodiens comme Gladiator et Game of Thrones.",
+      "lat": 31.047,
+      "lng": -7.1319,
+      "images": [
+        "https://images.unsplash.com/photo-1531501410720-c8d437636169?w=800"
+      ],
+      "rating": 4.8,
+      "hours": "08:00-18:00",
+      "price": 20
+    },
+    {
+      "id": 10,
+      "name": "Gorges du Dadès",
+      "city": "Boumalne Dadès",
+      "category": "Nature",
+      "description": "Ces gorges spectaculaires offrent des paysages à couper le souffle avec leurs formations rocheuses uniques. La route serpentine est l'une des plus belles du Maroc.",
+      "lat": 31.4761,
+      "lng": -5.9714,
+      "images": [
+        "https://images.unsplash.com/photo-1597212720158-8cf9da8f3d3e?w=800"
+      ],
+      "rating": 4.6,
+      "hours": "24h/24"
+    },
+    {
+      "id": 11,
+      "name": "Mosquée Koutoubia",
+      "city": "Marrakech",
+      "category": "Monument",
+      "description": "Le minaret de la Koutoubia, haut de 77 mètres, est le symbole de Marrakech. Cette mosquée almohade du XIIe siècle a inspiré la Giralda de Séville et la Tour Hassan de Rabat.",
+      "lat": 31.6235,
+      "lng": -7.9939,
+      "images": [
+        "https://images.unsplash.com/photo-1548018560-c7196ad9eb00?w=800"
+      ],
+      "rating": 4.7,
+      "hours": "Visite extérieure uniquement"
+    },
+    {
+      "id": 12,
+      "name": "Cascades d'Ouzoud",
+      "city": "Azilal",
+      "category": "Nature",
+      "description": "Hautes de 110 mètres, ces cascades sont les plus impressionnantes du Maroc. On peut y observer des singes magots et se baigner dans les bassins naturels en été.",
+      "lat": 32.015,
+      "lng": -6.7167,
+      "images": [
+        "https://images.unsplash.com/photo-1504198458649-3128b932f49e?w=800"
+      ],
+      "rating": 4.7,
+      "hours": "08:00-18:00",
+      "price": 20
+    },
+    {
+      "id": 13,
+      "name": "Volubilis",
+      "city": "Meknès",
+      "category": "Monument",
+      "description": "Ces ruines romaines du IIIe siècle avant J.-C. sont les mieux préservées du Maroc. Les mosaïques, l'arc de triomphe et la basilique témoignent de la grandeur de Rome en Afrique.",
+      "lat": 34.0733,
+      "lng": -5.5547,
+      "images": [
+        "https://images.unsplash.com/photo-1570197571499-166b36435e9f?w=800"
+      ],
+      "rating": 4.5,
+      "hours": "08:00-18:00",
+      "price": 70
+    },
+    {
+      "id": 14,
+      "name": "Essaouira Médina",
+      "city": "Essaouira",
+      "category": "Médina",
+      "description": "Cette cité portuaire fortifiée est un bijou d'architecture mogador. Ses remparts, ses galeries d'art, son port de pêche et ses vents constants en font la capitale du windsurf au Maroc.",
+      "lat": 31.5085,
+      "lng": -9.7595,
+      "images": [
+        "https://images.unsplash.com/photo-1539635278303-d4002c07eae3?w=800"
+      ],
+      "rating": 4.6,
+      "hours": "24h/24"
+    },
+    {
+      "id": 15,
+      "name": "Mont Toubkal",
+      "city": "Imlil",
+      "category": "Montagne",
+      "description": "Le plus haut sommet d'Afrique du Nord (4 167 m) offre des randonnées spectaculaires. L'ascension de 2 jours passe par le refuge du Toubkal avec des vues panoramiques sur l'Atlas.",
+      "lat": 31.0596,
+      "lng": -7.9153,
+      "images": [
+        "https://images.unsplash.com/photo-1516939884455-1445c8652f83?w=800"
+      ],
+      "rating": 4.8,
+      "hours": "Accès libre"
+    },
+    {
+      "id": 16,
+      "name": "Palais Bahia",
+      "city": "Marrakech",
+      "category": "Monument",
+      "description": "Ce palais du XIXe siècle est un chef-d'œuvre de l'architecture marocaine. Ses 8 hectares comprennent des riads, jardins, cours et salons décorés de zellige, bois de cèdre et stuc.",
+      "lat": 31.6202,
+      "lng": -7.9827,
+      "images": [
+        "https://images.unsplash.com/photo-1577538927151-0d5de6c8d35b?w=800"
+      ],
+      "rating": 4.5,
+      "hours": "09:00-17:00",
+      "price": 70
+    },
+    {
+      "id": 17,
+      "name": "Tanneries de Fès",
+      "city": "Fès",
+      "category": "Artisanat",
+      "description": "Les tanneries Chouara sont les plus anciennes du monde encore en activité (XIe siècle). Le spectacle des cuves colorées et du travail traditionnel du cuir est unique.",
+      "lat": 34.0661,
+      "lng": -4.9735,
+      "images": [
+        "https://images.unsplash.com/photo-1548793977-f4e8c8d6b549?w=800"
+      ],
+      "rating": 4.4,
+      "hours": "08:00-18:00"
+    },
+    {
+      "id": 18,
+      "name": "Plage d'Agadir",
+      "city": "Agadir",
+      "category": "Plage",
+      "description": "Cette immense plage de sable fin de 10 km est bordée d'une promenade animée. Agadir bénéficie de 300 jours de soleil par an, idéal pour le farniente et les sports nautiques.",
+      "lat": 30.4178,
+      "lng": -9.5981,
+      "images": [
+        "https://images.unsplash.com/photo-1590523278191-995cbcda646b?w=800"
+      ],
+      "rating": 4.3,
+      "hours": "24h/24"
+    },
+    {
+      "id": 19,
+      "name": "Grottes d'Hercule",
+      "city": "Tanger",
+      "category": "Nature",
+      "description": "Situées au cap Spartel, ces grottes mythologiques offrent une ouverture naturelle en forme d'Afrique sur l'océan. Un lieu chargé d'histoire où l'Atlantique rencontre la Méditerranée.",
+      "lat": 35.7621,
+      "lng": -5.9371,
+      "images": [
+        "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=800"
+      ],
+      "rating": 4.2,
+      "hours": "09:00-18:00",
+      "price": 10
+    },
+    {
+      "id": 20,
+      "name": "Vallée du Paradis",
+      "city": "Agadir",
+      "category": "Nature",
+      "description": "Cette oasis cachée dans les montagnes près d'Agadir offre des bassins naturels d'eau turquoise entourés de palmiers. Parfait pour échapper à la chaleur et se baigner.",
+      "lat": 30.6081,
+      "lng": -9.4567,
+      "images": [
+        "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800"
+      ],
+      "rating": 4.5,
+      "hours": "08:00-18:00"
+    },
+    {
+      "id": 21,
+      "name": "Tour Hassan",
+      "city": "Rabat",
+      "category": "Monument",
+      "description": "Ce minaret inachevé du XIIe siècle devait couronner la plus grande mosquée du monde. Aujourd'hui, ses 44 mètres dominent l'esplanade aux 200 colonnes et le mausolée Mohammed V.",
+      "lat": 34.0245,
+      "lng": -6.8219,
+      "images": [
+        "https://images.unsplash.com/photo-1569235186275-626cb53b83ce?w=800"
+      ],
+      "rating": 4.6,
+      "hours": "08:00-18:00"
+    },
+    {
+      "id": 22,
+      "name": "Mausolée Mohammed V",
+      "city": "Rabat",
+      "category": "Monument",
+      "description": "Chef-d'œuvre de l'architecture arabo-andalouse moderne, ce mausolée abrite les tombes de Mohammed V et Hassan II. L'intérieur en marbre blanc et vert est d'une beauté saisissante.",
+      "lat": 34.0246,
+      "lng": -6.822,
+      "images": [
+        "https://images.unsplash.com/photo-1569235186275-626cb53b83ce?w=800"
+      ],
+      "rating": 4.7,
+      "hours": "09:00-18:00"
+    },
+    {
+      "id": 23,
+      "name": "Musée Yves Saint Laurent",
+      "city": "Marrakech",
+      "category": "Musée",
+      "description": "Dédié au créateur français qui a tant aimé Marrakech, ce musée expose ses créations iconiques. L'architecture contemporaine en terre cuite dialogue avec la tradition marocaine.",
+      "lat": 31.6418,
+      "lng": -8.0036,
+      "images": [
+        "https://images.unsplash.com/photo-1567426417029-53bf7fc3bbd4?w=800"
+      ],
+      "rating": 4.5,
+      "hours": "10:00-18:00",
+      "price": 100
+    },
+    {
+      "id": 24,
+      "name": "Vallée de l'Ourika",
+      "city": "Ourika",
+      "category": "Nature",
+      "description": "À 30 km de Marrakech, cette vallée verdoyante du Haut Atlas offre des randonnées, des villages berbères authentiques et le jardin bio-aromatique de Nectarome.",
+      "lat": 31.3489,
+      "lng": -7.8478,
+      "images": [
+        "https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=800"
+      ],
+      "rating": 4.4,
+      "hours": "Accès libre"
+    },
+    {
+      "id": 25,
+      "name": "Bab Boujloud",
+      "city": "Fès",
+      "category": "Monument",
+      "description": "Cette porte monumentale du XIIe siècle est l'entrée principale de la médina de Fès. Ses céramiques bleues (côté ville) et vertes (côté médina) en font l'une des plus photogéniques.",
+      "lat": 34.0633,
+      "lng": -4.9814,
+      "images": [
+        "https://images.unsplash.com/photo-1545041087-5e58db7b2b8c?w=800"
+      ],
+      "rating": 4.6,
+      "hours": "24h/24"
+    },
+    {
+      "id": 26,
+      "name": "Plage de Taghazout",
+      "city": "Taghazout",
+      "category": "Plage",
+      "description": "Village de surfeurs par excellence, Taghazout offre des vagues parfaites pour tous niveaux. Ambiance bohème, écoles de surf et soirées autour de feux de camp sur la plage.",
+      "lat": 30.545,
+      "lng": -9.7086,
+      "images": [
+        "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800"
+      ],
+      "rating": 4.6,
+      "hours": "24h/24"
+    },
+    {
+      "id": 27,
+      "name": "Gorges du Todra",
+      "city": "Tinghir",
+      "category": "Nature",
+      "description": "Ces gorges spectaculaires de 300 mètres de haut sont le paradis des grimpeurs. La rivière qui les traverse crée une oasis fraîche au cœur du désert.",
+      "lat": 31.5889,
+      "lng": -5.5831,
+      "images": [
+        "https://images.unsplash.com/photo-1597212720158-8cf9da8f3d3e?w=800"
+      ],
+      "rating": 4.7,
+      "hours": "Accès libre"
+    },
+    {
+      "id": 28,
+      "name": "Médina de Tanger",
+      "city": "Tanger",
+      "category": "Médina",
+      "description": "Porte de l'Afrique sur l'Europe, la médina de Tanger a inspiré de nombreux artistes. Ses cafés historiques, le Grand Socco et la kasbah offrent une atmosphère cosmopolite unique.",
+      "lat": 35.7844,
+      "lng": -5.8137,
+      "images": [
+        "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800"
+      ],
+      "rating": 4.3,
+      "hours": "24h/24"
+    },
+    {
+      "id": 29,
+      "name": "Palais El Badi",
+      "city": "Marrakech",
+      "category": "Monument",
+      "description": "Les ruines de ce palais saadien du XVIe siècle témoignent de sa grandeur passée. Ses bassins, jardins et murs en pisé abritent aujourd'hui des nids de cigognes.",
+      "lat": 31.6165,
+      "lng": -7.9847,
+      "images": [
+        "https://images.unsplash.com/photo-1548018560-c7196ad9eb00?w=800"
+      ],
+      "rating": 4.3,
+      "hours": "09:00-17:00",
+      "price": 70
+    },
+    {
+      "id": 30,
+      "name": "Cap Spartel",
+      "city": "Tanger",
+      "category": "Nature",
+      "description": "Ce promontoire au nord-ouest de l'Afrique marque la rencontre de l'Atlantique et de la Méditerranée. Son phare blanc et ses falaises offrent des vues panoramiques spectaculaires.",
+      "lat": 35.7921,
+      "lng": -5.9281,
+      "images": [
+        "https://images.unsplash.com/photo-1523978591478-c753949ff840?w=800"
+      ],
+      "rating": 4.4,
+      "hours": "Accès libre"
+    },
+    {
+      "id": 31,
+      "name": "Musée Dar Si Said",
+      "city": "Marrakech",
+      "category": "Musée",
+      "description": "Ce palais du XIXe siècle abrite le musée des Arts marocains. Collections de bijoux berbères, tapis, armes, poteries et boiseries sculptées dans un cadre somptueux.",
+      "lat": 31.6205,
+      "lng": -7.9851,
+      "images": [
+        "https://images.unsplash.com/photo-1577538927151-0d5de6c8d35b?w=800"
+      ],
+      "rating": 4.2,
+      "hours": "09:00-17:00",
+      "price": 30
+    },
+    {
+      "id": 32,
+      "name": "Vallée du Drâa",
+      "city": "Zagora",
+      "category": "Nature",
+      "description": "La plus longue palmeraie du Maroc s'étend sur 200 km. Kasbahs en terre, villages berbères et oasis ponctuent cette vallée mythique menant aux portes du Sahara.",
+      "lat": 30.3331,
+      "lng": -5.8375,
+      "images": [
+        "https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=800"
+      ],
+      "rating": 4.6,
+      "hours": "Accès libre"
+    },
+    {
+      "id": 33,
+      "name": "Médina de Meknès",
+      "city": "Meknès",
+      "category": "Médina",
+      "description": "Ancienne capitale impériale, Meknès conserve des remparts monumentaux et la porte Bab Mansour, considérée comme la plus belle du Maroc. Moins touristique que Fès ou Marrakech.",
+      "lat": 33.8937,
+      "lng": -5.5473,
+      "images": [
+        "https://images.unsplash.com/photo-1570197571499-166b36435e9f?w=800"
+      ],
+      "rating": 4.4,
+      "hours": "24h/24"
+    },
+    {
+      "id": 34,
+      "name": "Lac Bin El Ouidane",
+      "city": "Beni Mellal",
+      "category": "Nature",
+      "description": "Ce lac turquoise artificiel au pied de l'Atlas est parfait pour les sports nautiques, la pêche et les randonnées. Les montagnes environnantes offrent des paysages grandioses.",
+      "lat": 32.1,
+      "lng": -6.4667,
+      "images": [
+        "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800"
+      ],
+      "rating": 4.3,
+      "hours": "Accès libre"
+    },
+    {
+      "id": 35,
+      "name": "Tombeaux Saadiens",
+      "city": "Marrakech",
+      "category": "Monument",
+      "description": "Découverts en 1917, ces mausolées du XVIe siècle abritent 66 tombes de la dynastie saadienne. Le marbre de Carrare et les stucs dorés témoignent de leur raffinement.",
+      "lat": 31.6171,
+      "lng": -7.9893,
+      "images": [
+        "https://images.unsplash.com/photo-1577538927151-0d5de6c8d35b?w=800"
+      ],
+      "rating": 4.5,
+      "hours": "09:00-17:00",
+      "price": 70
+    },
+    {
+      "id": 36,
+      "name": "Oasis de Skoura",
+      "city": "Skoura",
+      "category": "Nature",
+      "description": "Cette oasis de 25 km² abrite la plus grande palmeraie du Maroc central. Ses kasbahs en pisé, dont la célèbre Amridil, émergent au milieu des palmiers dattiers.",
+      "lat": 31.0617,
+      "lng": -6.5517,
+      "images": [
+        "https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=800"
+      ],
+      "rating": 4.4,
+      "hours": "Accès libre"
+    },
+    {
+      "id": 37,
+      "name": "Jardin de la Ménara",
+      "city": "Marrakech",
+      "category": "Jardin",
+      "description": "Ce jardin du XIIe siècle avec son bassin et son pavillon offre une vue emblématique sur l'Atlas enneigé. L'oliveraie centenaire invite à la promenade.",
+      "lat": 31.6133,
+      "lng": -8.0219,
+      "images": [
+        "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=800"
+      ],
+      "rating": 4.2,
+      "hours": "08:00-17:00"
+    },
+    {
+      "id": 38,
+      "name": "Plage d'Asilah",
+      "city": "Asilah",
+      "category": "Plage",
+      "description": "Cette station balnéaire au charme andalou offre des plages propres et une médina aux murailles blanches ornées de fresques. Le festival culturel annuel attire artistes du monde entier.",
+      "lat": 35.4667,
+      "lng": -6.0333,
+      "images": [
+        "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800"
+      ],
+      "rating": 4.4,
+      "hours": "24h/24"
+    },
+    {
+      "id": 39,
+      "name": "Moulay Idriss Zerhoun",
+      "city": "Moulay Idriss",
+      "category": "Ville",
+      "description": "Cette ville sainte perchée sur deux collines abrite le tombeau du fondateur de la première dynastie marocaine. L'atmosphère spirituelle et les vues sur la campagne sont uniques.",
+      "lat": 34.0556,
+      "lng": -5.5244,
+      "images": [
+        "https://images.unsplash.com/photo-1570197571499-166b36435e9f?w=800"
+      ],
+      "rating": 4.3,
+      "hours": "Accès libre"
+    },
+    {
+      "id": 40,
+      "name": "Parc National de Souss-Massa",
+      "city": "Agadir",
+      "category": "Nature",
+      "description": "Ce parc de 33 800 hectares protège l'ibis chauve, espèce menacée. Dunes, falaises, embouchures de fleuves et forêt d'arganiers abritent une faune et flore exceptionnelles.",
+      "lat": 30.0667,
+      "lng": -9.6,
+      "images": [
+        "https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=800"
+      ],
+      "rating": 4.2,
+      "hours": "08:00-18:00",
+      "price": 20
+    },
+    {
+      "id": 41,
+      "name": "Akchour",
+      "city": "Chefchaouen",
+      "category": "Nature",
+      "description": "Cette vallée du Rif offre des cascades spectaculaires et le Pont de Dieu, arche naturelle impressionnante. Randonnées dans une nature préservée loin du tourisme de masse.",
+      "lat": 35.2253,
+      "lng": -5.1478,
+      "images": [
+        "https://images.unsplash.com/photo-1504198458649-3128b932f49e?w=800"
+      ],
+      "rating": 4.6,
+      "hours": "Accès libre"
+    },
+    {
+      "id": 42,
+      "name": "Jardin Arsat Moulay Abdeslam",
+      "city": "Marrakech",
+      "category": "Jardin",
+      "description": "Ce jardin cybernétique mêle traditions marocaines et technologies modernes. Un havre de paix au cœur de la médina avec fontaines, bassins et végétation luxuriante.",
+      "lat": 31.63,
+      "lng": -7.99,
+      "images": [
+        "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=800"
+      ],
+      "rating": 4.1,
+      "hours": "08:00-18:00"
+    },
+    {
+      "id": 43,
+      "name": "Studios Atlas",
+      "city": "Ouarzazate",
+      "category": "Attraction",
+      "description": "Ces studios de cinéma à ciel ouvert ont accueilli des superproductions comme Gladiator, Game of Thrones et Kingdom of Heaven. Visite des décors encore en place.",
+      "lat": 30.9081,
+      "lng": -6.8767,
+      "images": [
+        "https://images.unsplash.com/photo-1531501410720-c8d437636169?w=800"
+      ],
+      "rating": 4.0,
+      "hours": "08:00-18:00",
+      "price": 60
+    },
+    {
+      "id": 44,
+      "name": "Ifrane",
+      "city": "Ifrane",
+      "category": "Ville",
+      "description": "Surnommée la 'Petite Suisse' du Maroc, cette ville de montagne surprend par son architecture alpine. La forêt de cèdres abrite les derniers macaques de Barbarie.",
+      "lat": 33.5333,
+      "lng": -5.1167,
+      "images": [
+        "https://images.unsplash.com/photo-1516939884455-1445c8652f83?w=800"
+      ],
+      "rating": 4.3,
+      "hours": "24h/24"
+    },
+    {
+      "id": 45,
+      "name": "Musée de la Photographie",
+      "city": "Marrakech",
+      "category": "Musée",
+      "description": "Installé dans un riad restauré, ce musée présente des photos du Maroc de 1870 à 1950. La terrasse offre une vue panoramique sur la médina et l'Atlas.",
+      "lat": 31.6303,
+      "lng": -7.9861,
+      "images": [
+        "https://images.unsplash.com/photo-1567426417029-53bf7fc3bbd4?w=800"
+      ],
+      "rating": 4.4,
+      "hours": "09:30-19:00",
+      "price": 50
+    },
+    {
+      "id": 46,
+      "name": "Paradise Valley",
+      "city": "Agadir",
+      "category": "Nature",
+      "description": "Ces piscines naturelles turquoise nichées entre les rochers sont parfaites pour se rafraîchir. Palmiers, rivière et falaises créent un décor paradisiaque.",
+      "lat": 30.61,
+      "lng": -9.45,
+      "images": [
+        "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800"
+      ],
+      "rating": 4.5,
+      "hours": "08:00-18:00"
+    },
+    {
+      "id": 47,
+      "name": "Dar El Makhzen",
+      "city": "Tanger",
+      "category": "Musée",
+      "description": "L'ancien palais du sultan abrite aujourd'hui le musée des Arts marocains et des Antiquités. Vue imprenable sur le port et le détroit de Gibraltar depuis les jardins.",
+      "lat": 35.7869,
+      "lng": -5.8128,
+      "images": [
+        "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800"
+      ],
+      "rating": 4.2,
+      "hours": "10:00-18:00",
+      "price": 20
+    },
+    {
+      "id": 48,
+      "name": "Source Bleue de Meski",
+      "city": "Errachidia",
+      "category": "Nature",
+      "description": "Cette oasis naturelle avec sa piscine d'eau de source bleue offre une halte rafraîchissante dans le désert. Palmiers dattiers et anciennes kasbahs complètent le tableau.",
+      "lat": 31.8667,
+      "lng": -4.2667,
+      "images": [
+        "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800"
+      ],
+      "rating": 4.1,
+      "hours": "08:00-18:00"
+    },
+    {
+      "id": 49,
+      "name": "Corniche d'Agadir",
+      "city": "Agadir",
+      "category": "Promenade",
+      "description": "Cette promenade de front de mer bordée de restaurants, cafés et hôtels offre une ambiance animée. Parfait pour flâner, faire du vélo ou admirer le coucher de soleil.",
+      "lat": 30.42,
+      "lng": -9.6,
+      "images": [
+        "https://images.unsplash.com/photo-1590523278191-995cbcda646b?w=800"
+      ],
+      "rating": 4.2,
+      "hours": "24h/24"
+    },
+    {
+      "id": 50,
+      "name": "Tétouan Médina",
+      "city": "Tétouan",
+      "category": "Médina",
+      "description": "Cette médina andalouse inscrite à l'UNESCO conserve une forte influence espagnole. Ses maisons blanches, patios décorés et artisanat traditionnel en font une perle du nord.",
+      "lat": 35.5775,
+      "lng": -5.3681,
+      "images": [
+        "https://images.unsplash.com/photo-1553522991-71439aa62779?w=800"
+      ],
+      "rating": 4.4,
+      "hours": "24h/24"
+    }
+  ]
+}
