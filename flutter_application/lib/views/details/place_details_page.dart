@@ -8,6 +8,7 @@ import '../../widgets/rating_stars.dart';
 import 'widgets/image_carrousel.dart';
 import 'widgets/info_section.dart';
 import '../maps/map_page.dart';
+import '../../utils/navigation.dart';
 
 class PlaceDetailsPage extends StatelessWidget {
   final Place place;
@@ -70,7 +71,22 @@ class PlaceDetailsPage extends StatelessWidget {
                         isFav ? Icons.favorite : Icons.favorite_border,
                         color: isFav ? AppColors.error : Colors.white,
                       ),
-                      onPressed: () => favorites.toggleFavorite(place),
+                      onPressed: () async {
+                        await favorites.toggleFavorite(place);
+                        final added = favorites.isFavorite(place.id);
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              added
+                                  ? '${place.name} ajouté aux favoris'
+                                  : '${place.name} retiré des favoris',
+                            ),
+                            behavior: SnackBarBehavior.floating,
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      },
                     );
                   },
                 ),
@@ -100,11 +116,11 @@ class PlaceDetailsPage extends StatelessWidget {
                           vertical: AppSpacing.xs,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.getCategoryColor(place.category),
+                          color: AppColors.getCategoryColorFromEnum(place.category),
                           borderRadius: BorderRadius.circular(AppRadius.full),
                         ),
                         child: Text(
-                          place.category,
+                          placeCategoryToDisplayString(place.category),
                           style: AppTextStyles.labelMedium.copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.w600,
@@ -241,8 +257,8 @@ class PlaceDetailsPage extends StatelessWidget {
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(
-                                builder: (_) => MapPage(initialPlace: place),
+                              buildFadeSlideRoute(
+                                MapPage(initialPlace: place),
                               ),
                             );
                           },

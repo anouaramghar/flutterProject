@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../models/place.dart';
 
 /// Travel Guide Maroc - Theme & Styles
 /// Palette inspirée des couleurs du Maroc : terre cuite, sable, bleu Majorelle
@@ -52,30 +53,33 @@ class AppColors {
   static const Color ratingEmpty = Color(0xFFE0E0E0);
 
   /// Get color for a category
-  static Color getCategoryColor(String category) {
-    switch (category.toLowerCase()) {
-      case 'monument':
+  static Color getCategoryColorFromEnum(PlaceCategory category) {
+    switch (category) {
+      case PlaceCategory.monument:
         return monument;
-      case 'plage':
+      case PlaceCategory.plage:
         return plage;
-      case 'nature':
+      case PlaceCategory.nature:
         return nature;
-      case 'médina':
-      case 'medina':
+      case PlaceCategory.medina:
         return medina;
-      case 'musée':
-      case 'musee':
+      case PlaceCategory.musee:
         return musee;
-      case 'désert':
-      case 'desert':
+      case PlaceCategory.desert:
         return desert;
-      case 'montagne':
+      case PlaceCategory.montagne:
         return montagne;
-      case 'jardin':
+      case PlaceCategory.jardin:
         return jardin;
-      default:
+      case PlaceCategory.ville:
+      case PlaceCategory.other:
         return primary;
     }
+  }
+
+  /// Backwards-compatible helper when only a raw string is available.
+  static Color getCategoryColor(String category) {
+    return getCategoryColorFromEnum(placeCategoryFromString(category));
   }
 }
 

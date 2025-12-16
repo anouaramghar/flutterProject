@@ -46,7 +46,7 @@ class FavoritesDB {
       'placeId': place.id,
       'name': place.name,
       'city': place.city,
-      'category': place.category,
+      'category': placeCategoryToDisplayString(place.category),
       'image': place.images.isNotEmpty ? place.images.first : null,
       'lat': place.latitude,
       'lng': place.longitude,
@@ -71,7 +71,7 @@ class FavoritesDB {
         id: maps[i]['placeId'],
         name: maps[i]['name'],
         city: maps[i]['city'],
-        category: maps[i]['category'],
+        category: placeCategoryFromString(maps[i]['category'] as String),
         description: '', // Description is not stored in favorites
         images: maps[i]['image'] != null ? [maps[i]['image']] : [],
         latitude: maps[i]['lat'],

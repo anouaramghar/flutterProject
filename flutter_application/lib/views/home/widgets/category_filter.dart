@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../utils/app_styles.dart';
+import '../../../models/place.dart';
 
 class CategoryFilter extends StatelessWidget {
-  final String? selectedCategory;
-  final Function(String?) onCategorySelected;
+  final PlaceCategory? selectedCategory;
+  final Function(PlaceCategory?) onCategorySelected;
 
   const CategoryFilter({
     super.key,
@@ -12,15 +13,15 @@ class CategoryFilter extends StatelessWidget {
   });
 
   static const List<Map<String, dynamic>> categories = [
-    {'name': 'Monument', 'icon': Icons.account_balance},
-    {'name': 'Plage', 'icon': Icons.beach_access},
-    {'name': 'Nature', 'icon': Icons.park},
-    {'name': 'Médina', 'icon': Icons.location_city},
-    {'name': 'Musée', 'icon': Icons.museum},
-    {'name': 'Désert', 'icon': Icons.landscape},
-    {'name': 'Montagne', 'icon': Icons.terrain},
-    {'name': 'Jardin', 'icon': Icons.local_florist},
-    {'name': 'Ville', 'icon': Icons.apartment},
+    {'category': PlaceCategory.monument, 'icon': Icons.account_balance},
+    {'category': PlaceCategory.plage, 'icon': Icons.beach_access},
+    {'category': PlaceCategory.nature, 'icon': Icons.park},
+    {'category': PlaceCategory.medina, 'icon': Icons.location_city},
+    {'category': PlaceCategory.musee, 'icon': Icons.museum},
+    {'category': PlaceCategory.desert, 'icon': Icons.landscape},
+    {'category': PlaceCategory.montagne, 'icon': Icons.terrain},
+    {'category': PlaceCategory.jardin, 'icon': Icons.local_florist},
+    {'category': PlaceCategory.ville, 'icon': Icons.apartment},
   ];
 
   @override
@@ -43,17 +44,18 @@ class CategoryFilter extends StatelessWidget {
             );
           }
 
-          final category = categories[index - 1];
-          final name = category['name'] as String;
-          final icon = category['icon'] as IconData;
+          final config = categories[index - 1];
+          final category = config['category'] as PlaceCategory;
+          final icon = config['icon'] as IconData;
+          final label = placeCategoryToDisplayString(category);
 
           return _buildChip(
             context,
-            label: name,
+            label: label,
             icon: icon,
-            isSelected: selectedCategory == name,
-            onTap: () => onCategorySelected(name),
-            color: AppColors.getCategoryColor(name),
+            isSelected: selectedCategory == category,
+            onTap: () => onCategorySelected(category),
+            color: AppColors.getCategoryColorFromEnum(category),
           );
         },
       ),

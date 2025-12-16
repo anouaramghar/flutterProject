@@ -1,8 +1,75 @@
+enum PlaceCategory {
+  monument,
+  plage,
+  nature,
+  medina,
+  musee,
+  desert,
+  montagne,
+  jardin,
+  ville,
+  /// Fallback when the category string is unknown or missing.
+  other,
+}
+
+PlaceCategory placeCategoryFromString(String value) {
+  switch (value.toLowerCase()) {
+    case 'monument':
+      return PlaceCategory.monument;
+    case 'plage':
+      return PlaceCategory.plage;
+    case 'nature':
+      return PlaceCategory.nature;
+    case 'médina':
+    case 'medina':
+      return PlaceCategory.medina;
+    case 'musée':
+    case 'musee':
+      return PlaceCategory.musee;
+    case 'désert':
+    case 'desert':
+      return PlaceCategory.desert;
+    case 'montagne':
+      return PlaceCategory.montagne;
+    case 'jardin':
+      return PlaceCategory.jardin;
+    case 'ville':
+      return PlaceCategory.ville;
+    default:
+      return PlaceCategory.other;
+  }
+}
+
+String placeCategoryToDisplayString(PlaceCategory category) {
+  switch (category) {
+    case PlaceCategory.monument:
+      return 'Monument';
+    case PlaceCategory.plage:
+      return 'Plage';
+    case PlaceCategory.nature:
+      return 'Nature';
+    case PlaceCategory.medina:
+      return 'Médina';
+    case PlaceCategory.musee:
+      return 'Musée';
+    case PlaceCategory.desert:
+      return 'Désert';
+    case PlaceCategory.montagne:
+      return 'Montagne';
+    case PlaceCategory.jardin:
+      return 'Jardin';
+    case PlaceCategory.ville:
+      return 'Ville';
+    case PlaceCategory.other:
+      return 'Autre';
+  }
+}
+
 class Place {
   final int id;
   final String name;
   final String city;
-  final String category;
+  final PlaceCategory category;
   final String description;
   final List<String> images;
   final double latitude;
@@ -30,7 +97,7 @@ class Place {
       id: json['id'],
       name: json['name'],
       city: json['city'],
-      category: json['category'],
+      category: placeCategoryFromString(json['category'] as String),
       description: json['description'],
       images: List<String>.from(json['images']),
       latitude: json['lat'].toDouble(),
@@ -47,7 +114,7 @@ class Place {
       'id': id,
       'name': name,
       'city': city,
-      'category': category,
+      'category': placeCategoryToDisplayString(category),
       'description': description,
       'images': images,
       'lat': latitude,

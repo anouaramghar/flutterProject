@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import '../../models/place.dart';
 import '../../providers/place_provider.dart';
 import '../../utils/app_styles.dart';
@@ -16,7 +17,6 @@ class MapPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapPage> {
-  GoogleMapController? _mapController;
   Place? _selectedPlace;
 
   // Default center: Morocco
@@ -28,64 +28,35 @@ class _MapPageState extends State<MapPage> {
     _selectedPlace = widget.initialPlace;
   }
 
-  Set<Marker> _createMarkers(List<Place> places) {
-    return places.map((place) {
-      return Marker(
-        markerId: MarkerId(place.id.toString()),
-        position: LatLng(place.latitude, place.longitude),
-        icon: BitmapDescriptor.defaultMarkerWithHue(
-          _getMarkerHue(place.category),
-        ),
-        infoWindow: InfoWindow(
-          title: place.name,
-          snippet: '${place.city} • ${place.category}',
-          onTap: () => _onMarkerInfoTap(place),
-        ),
-        onTap: () {
-          setState(() {
-            _selectedPlace = place;
-          });
-        },
-      );
-    }).toSet();
-  }
-
-  double _getMarkerHue(String category) {
-    switch (category.toLowerCase()) {
-      case 'monument':
-        return BitmapDescriptor.hueOrange;
-      case 'plage':
-        return BitmapDescriptor.hueCyan;
-      case 'nature':
-        return BitmapDescriptor.hueGreen;
-      case 'médina':
-      case 'medina':
-        return BitmapDescriptor.hueYellow;
-      case 'musée':
-      case 'musee':
-        return BitmapDescriptor.hueViolet;
-      case 'désert':
-      case 'desert':
-        return BitmapDescriptor.hueRose;
-      case 'montagne':
-        return BitmapDescriptor.hueBlue;
-      case 'jardin':
-        return BitmapDescriptor.hueGreen;
-      default:
-        return BitmapDescriptor.hueRed;
-    }
+  List<Marker> _createMarkers(List<Place> places) {
+    return places
+        .map(
+          (place) => Marker(
+            point: LatLng(place.latitude, place.longitude),
+            width: 40,
+            height: 40,
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _selectedPlace = place;
+                });
+              },
+              onDoubleTap: () => _onMarkerInfoTap(place),
+              child: Icon(
+                Icons.location_on,
+                color: AppColors.getCategoryColorFromEnum(place.category),
+                size: 32,
+              ),
+            ),
+          ),
+        )
+        .toList();
   }
 
   void _onMarkerInfoTap(Place place) {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => PlaceDetailsPage(place: place)),
-    );
-  }
-
-  void _goToPlace(Place place) {
-    _mapController?.animateCamera(
-      CameraUpdate.newLatLngZoom(LatLng(place.latitude, place.longitude), 14),
     );
   }
 
@@ -118,22 +89,22 @@ class _MapPageState extends State<MapPage> {
 
           return Stack(
             children: [
-              GoogleMap(
-                initialCameraPosition: CameraPosition(
-                  target: initialPosition,
-                  zoom: widget.initialPlace != null ? 14 : 6,
+              FlutterMap(
+                options: MapOptions(
+                  initialCenter: initialPosition,
+                  initialZoom: widget.initialPlace != null ? 14 : 6,
                 ),
-                markers: _createMarkers(provider.places),
-                onMapCreated: (controller) {
-                  _mapController = controller;
-                  if (widget.initialPlace != null) {
-                    _goToPlace(widget.initialPlace!);
-                  }
-                },
-                myLocationEnabled: true,
-                myLocationButtonEnabled: true,
-                zoomControlsEnabled: true,
-                mapToolbarEnabled: true,
+                children: [
+                  TileLayer(
+                    urlTemplate:
+                        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    subdomains: const ['a', 'b', 'c'],
+                    userAgentPackageName: 'com.example.flutter_application',
+                  ),
+                  MarkerLayer(
+                    markers: _createMarkers(provider.places),
+                  ),
+                ],
               ),
 
               // Selected place card at bottom
@@ -161,6 +132,12 @@ class _MapPageState extends State<MapPage> {
   Widget _buildPlaceCard(Place place) {
     return GestureDetector(
       onTap: () => _onMarkerInfoTap(place),
+      onVerticalDragDown: (_) {
+        // Allow user to swipe down to dismiss the card
+        setState(() {
+          _selectedPlace = null;
+        });
+      },
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
@@ -174,14 +151,14 @@ class _MapPageState extends State<MapPage> {
             Container(
               padding: const EdgeInsets.all(AppSpacing.sm),
               decoration: BoxDecoration(
-                color: AppColors.getCategoryColor(
+                color: AppColors.getCategoryColorFromEnum(
                   place.category,
                 ).withOpacity(0.15),
                 borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
               child: Icon(
                 _getCategoryIcon(place.category),
-                color: AppColors.getCategoryColor(place.category),
+                color: AppColors.getCategoryColorFromEnum(place.category),
                 size: 24,
               ),
             ),
@@ -276,28 +253,26 @@ class _MapPageState extends State<MapPage> {
     );
   }
 
-  IconData _getCategoryIcon(String category) {
-    switch (category.toLowerCase()) {
-      case 'monument':
+  IconData _getCategoryIcon(PlaceCategory category) {
+    switch (category) {
+      case PlaceCategory.monument:
         return Icons.account_balance;
-      case 'plage':
+      case PlaceCategory.plage:
         return Icons.beach_access;
-      case 'nature':
+      case PlaceCategory.nature:
         return Icons.park;
-      case 'médina':
-      case 'medina':
+      case PlaceCategory.medina:
         return Icons.location_city;
-      case 'musée':
-      case 'musee':
+      case PlaceCategory.musee:
         return Icons.museum;
-      case 'désert':
-      case 'desert':
+      case PlaceCategory.desert:
         return Icons.landscape;
-      case 'montagne':
+      case PlaceCategory.montagne:
         return Icons.terrain;
-      case 'jardin':
+      case PlaceCategory.jardin:
         return Icons.local_florist;
-      default:
+      case PlaceCategory.ville:
+      case PlaceCategory.other:
         return Icons.place;
     }
   }

@@ -52,10 +52,10 @@ class PlaceProvider extends ChangeNotifier {
   }
 
   //Filtrer par catégorie
-  void filterByCategory(String category) {
-    _places = _allPlaces.where((place) =>
-        place.category == category
-    ).toList();
+  void filterByCategory(PlaceCategory category) {
+    _places = _allPlaces
+        .where((place) => place.category == category)
+        .toList();
     notifyListeners();
   }
 

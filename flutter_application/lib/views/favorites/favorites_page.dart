@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../providers/favorites_provider.dart';
+import '../../models/place.dart';
 import '../../utils/app_styles.dart';
 import '../../widgets/rating_stars.dart';
+import '../../widgets/empty_state.dart';
+import '../../utils/navigation.dart';
 import '../details/place_details_page.dart';
 
 class FavoritesPage extends StatelessWidget {
@@ -28,7 +31,12 @@ class FavoritesPage extends StatelessWidget {
           }
 
           if (favorites.favorites.isEmpty) {
-            return _buildEmptyState();
+            return const EmptyState(
+              icon: Icons.favorite_border,
+              title: 'Aucun favori',
+              message:
+                  'Ajoutez des lieux à vos favoris pour les retrouver ici',
+            );
           }
 
           return ListView.builder(
@@ -74,54 +82,16 @@ class FavoritesPage extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.xl),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.xl),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.favorite_border,
-                size: 64,
-                color: AppColors.primary.withOpacity(0.5),
-              ),
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            Text(
-              'Aucun favori',
-              style: AppTextStyles.h3.copyWith(color: AppColors.textSecondary),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              'Ajoutez des lieux à vos favoris pour les retrouver ici',
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.textMuted,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildFavoriteCard(
     BuildContext context,
-    place,
+    Place place,
     FavoritesProvider favorites,
   ) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => PlaceDetailsPage(place: place)),
+          buildFadeSlideRoute(PlaceDetailsPage(place: place)),
         );
       },
       child: Container(
@@ -200,15 +170,15 @@ class FavoritesPage extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: AppColors.getCategoryColor(
+                            color: AppColors.getCategoryColorFromEnum(
                               place.category,
                             ).withOpacity(0.15),
                             borderRadius: BorderRadius.circular(AppRadius.full),
                           ),
                           child: Text(
-                            place.category,
+                            placeCategoryToDisplayString(place.category),
                             style: AppTextStyles.labelSmall.copyWith(
-                              color: AppColors.getCategoryColor(place.category),
+                              color: AppColors.getCategoryColorFromEnum(place.category),
                               fontWeight: FontWeight.w600,
                             ),
                           ),
