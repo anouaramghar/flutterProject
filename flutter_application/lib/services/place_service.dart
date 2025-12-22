@@ -11,7 +11,7 @@ class PlaceService {
     final String jsonString =
         await rootBundle.loadString('assets/data/places.json');
 
-    //Convertir le JSON string en Map
+    //Convertir le JSON  string en Map
     final Map<String, dynamic> jsonData = json.decode(jsonString);
 
     //Récupérer la liste des lieux
