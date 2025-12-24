@@ -10,6 +10,11 @@ import '../favorites/favorites_page.dart';
 import '../maps/map_page.dart';
 import 'all_places_page.dart';
 import '../../utils/navigation.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import '../details/article_page.dart';
+import 'package:latlong2/latlong.dart';
+import '../../models/travel_route.dart';
+import '../details/route_details_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -84,6 +89,12 @@ class _HomePageState extends State<HomePage> {
           // "Voir Plus" Button
           _buildViewMoreButton(),
 
+          // Article Section
+          _buildArticleSection(),
+          
+          const SizedBox(height: AppSpacing.xl),
+          _buildRoutesSection(),
+
           const SizedBox(height: AppSpacing.xl),
         ],
       ),
@@ -99,9 +110,7 @@ class _HomePageState extends State<HomePage> {
           width: double.infinity,
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: const CachedNetworkImageProvider(
-                'https://images.unsplash.com/photo-1531501410720-c8d437636169?w=1200',
-              ),
+              image: const AssetImage('assets/images/home_image.jpg'),
               fit: BoxFit.cover,
               colorFilter: ColorFilter.mode(
                 Colors.black.withValues(alpha: 0.3),
@@ -263,46 +272,54 @@ class _HomePageState extends State<HomePage> {
   Widget _buildFeaturedPlacesSection() {
     return Consumer<PlaceProvider>(
       builder: (context, provider, _) {
+        // 1. État de chargement (Squelette horizontal)
         if (provider.isLoading) {
-          // Skeleton grid while loading
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-            child: GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: AppSpacing.md,
-                mainAxisSpacing: AppSpacing.md,
-                childAspectRatio: 0.85,
-              ),
+          return SizedBox(
+            height: 220, // Hauteur fixe pour le conteneur de chargement
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
               itemCount: 4,
               itemBuilder: (context, index) {
-                return _buildFeaturedSkeletonCard();
+                return Container(
+                  width: 160, // Largeur fixe pour l'effet "petite taille"
+                  margin: const EdgeInsets.only(right: AppSpacing.md),
+                  child: _buildFeaturedSkeletonCard(),
+                );
               },
             ),
           );
         }
 
-        // Get first 6 places for featured section
+        // Récupérer les 6 premiers lieux
         final featuredPlaces = provider.places.take(6).toList();
 
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-          child: GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: AppSpacing.md,
-              mainAxisSpacing: AppSpacing.md,
-              childAspectRatio: 0.85,
-            ),
-            itemCount: featuredPlaces.length,
-            itemBuilder: (context, index) {
-              final place = featuredPlaces[index];
-              return _buildFeaturedCard(place);
-            },
+        // 2. Le Carrousel Automatique
+        return CarouselSlider.builder(
+          itemCount: featuredPlaces.length,
+          itemBuilder: (context, index, realIndex) {
+            final place = featuredPlaces[index];
+            // On enveloppe la card dans un container pour gérer les marges internes du carrousel
+            return Container(
+              margin: const EdgeInsets.symmetric(horizontal: 5.0),
+              child: _buildFeaturedCard(place),
+            );
+          },
+          options: CarouselOptions(
+            height: 220.0, // Hauteur réduite pour des cartes "petite taille"
+            
+            // viewportFraction gère la largeur des cartes. 
+            // 0.45 signifie que la carte prend 45% de la largeur de l'écran (donc petite).
+            viewportFraction: 0.45, 
+            
+            enableInfiniteScroll: true, // Défilement infini
+            autoPlay: true, // Défilement automatique activé
+            autoPlayInterval: const Duration(seconds: 3), // Vitesse du défilement
+            autoPlayAnimationDuration: const Duration(milliseconds: 800),
+            autoPlayCurve: Curves.fastOutSlowIn,
+            enlargeCenterPage: true, // Met légèrement en avant la carte centrale (optionnel)
+            enlargeFactor: 0.15, // Intensité de l'agrandissement central
+            scrollDirection: Axis.horizontal,
           ),
         );
       },
@@ -529,6 +546,348 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildArticleSection() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const ArticlePage()),
+        );
+      },
+      child: Container(
+        height: 260, // On donne de la hauteur pour l'impact visuel
+        margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20), // Coins très arrondis
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primary.withOpacity(0.4), // Ombre colorée
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
+          image: const DecorationImage(
+            image: AssetImage('assets/images/todgha_gorges.jpg'), 
+            fit: BoxFit.cover,
+            ),
+        ),
+        child: Stack(
+          children: [
+            // 1. Le Dégradé (pour que le texte soit lisible)
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withOpacity(0.3),
+                    Colors.black.withOpacity(0.9),
+                  ],
+                  stops: const [0.3, 0.6, 1.0],
+                ),
+              ),
+            ),
+
+            // 2. Le Contenu Texte + Badge
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  // Badge "Inspiration"
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Text(
+                      'GUIDE DE VOYAGE',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Grand Titre
+                  const Text(
+                    'Où partir au Maroc ?',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      height: 1.1,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+
+                  // Sous-titre descriptif
+                  Text(
+                    'Des montagnes de l\'Atlas aux dunes du Sahara, découvrez les régions qui font rêver.',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.9),
+                      fontSize: 14,
+                      height: 1.4,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Bouton "Lire la suite" stylisé
+                  Row(
+                    children: [
+                      const Text(
+                        'Lire l\'article',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 2),
+                        ),
+                        child: const Icon(
+                          Icons.arrow_forward,
+                          color: Colors.white,
+                          size: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRoutesSection() {
+    // Liste enrichie avec 4 trajets
+    final List<TravelRoute> routes = [
+      // TRAJET 1 : LE SUD
+      TravelRoute(
+        title: "Le Grand Sud",
+        duration: "4 Jours",
+        coverImage: "https://images.unsplash.com/photo-1548588627-f978862b85e1?w=800",
+        stations: [
+          RouteStation(
+            name: "Marrakech",
+            image: "https://images.unsplash.com/photo-1597212618440-806262de4f6b?w=400",
+            coordinate: const LatLng(31.6295, -7.9811),
+            description: "Point de départ, la ville rouge et ses souks.",
+          ),
+          RouteStation(
+            name: "Aït Ben Haddou",
+            image: "https://images.unsplash.com/photo-1576014131795-d440191a8e8b?w=400",
+            coordinate: const LatLng(31.0470, -7.1319),
+            description: "Ksar historique classé à l'UNESCO.",
+          ),
+          RouteStation(
+            name: "Ouarzazate",
+            image: "https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=400",
+            coordinate: const LatLng(30.9189, -6.9196),
+            description: "La porte du désert et ses studios de cinéma.",
+          ),
+        ],
+      ),
+
+      // TRAJET 2 : LA CÔTE
+      TravelRoute(
+        title: "Route Côtière",
+        duration: "3 Jours",
+        coverImage: "https://images.unsplash.com/photo-1580618055006-039c0490eb7e?w=800",
+        stations: [
+           RouteStation(
+            name: "Essaouira",
+            image: "https://images.unsplash.com/photo-1575883398906-8b29c0a52f9b?w=400",
+            coordinate: const LatLng(31.5085, -9.7595),
+            description: "La cité des vents et ses remparts bleus.",
+          ),
+           RouteStation(
+            name: "Agadir",
+            image: "https://images.unsplash.com/photo-1565532386869-7c4856033873?w=400",
+            coordinate: const LatLng(30.4278, -9.5981),
+            description: "Plages immenses et soleil toute l'année.",
+          ),
+           RouteStation(
+            name: "Taghazout",
+            image: "https://images.unsplash.com/photo-1532960401447-7dd05bef20b0?w=400",
+            coordinate: const LatLng(30.5449, -9.7091),
+            description: "Le paradis des surfeurs et des couchers de soleil.",
+          ),
+        ],
+      ),
+
+      // TRAJET 3 : LE NORD (Nouveau)
+      TravelRoute(
+        title: "Perles du Nord",
+        duration: "5 Jours",
+        coverImage: "https://images.unsplash.com/photo-1564507004663-b6dfb3c824d5?w=800", // Chefchaouen
+        stations: [
+          RouteStation(
+            name: "Tanger",
+            image: "https://images.unsplash.com/photo-1587595431973-160d0d94add1?w=400",
+            coordinate: const LatLng(35.7595, -5.8340),
+            description: "La ville blanche face à l'Europe.",
+          ),
+          RouteStation(
+            name: "Chefchaouen",
+            image: "https://images.unsplash.com/photo-1518182170546-0766ce6fec56?w=400",
+            coordinate: const LatLng(35.1716, -5.2697),
+            description: "La célèbre perle bleue dans les montagnes.",
+          ),
+          RouteStation(
+            name: "Akchour",
+            image: "https://images.unsplash.com/photo-1667852627916-16f55694c256?w=400",
+            coordinate: const LatLng(35.2369, -5.1456),
+            description: "Cascades cristallines et randonnées.",
+          ),
+        ],
+      ),
+
+      // TRAJET 4 : VILLES IMPÉRIALES (Nouveau)
+      TravelRoute(
+        title: "Impérial",
+        duration: "6 Jours",
+        coverImage: "https://images.unsplash.com/photo-1535201104882-7d22b622f980?w=800", // Fes
+        stations: [
+          RouteStation(
+            name: "Fès",
+            image: "https://images.unsplash.com/photo-1557754388-c7a6e1233840?w=400",
+            coordinate: const LatLng(34.0181, -5.0078),
+            description: "La capitale spirituelle et sa médina millénaire.",
+          ),
+          RouteStation(
+            name: "Meknès",
+            image: "https://images.unsplash.com/photo-1571409249764-169826d97c36?w=400",
+            coordinate: const LatLng(33.8938, -5.5516),
+            description: "La ville aux cent minarets et Bab Mansour.",
+          ),
+          RouteStation(
+            name: "Volubilis",
+            image: "https://images.unsplash.com/photo-1596530663737-293630f9d936?w=400",
+            coordinate: const LatLng(34.0725, -5.5538),
+            description: "Ruines romaines exceptionnellement préservées.",
+          ),
+        ],
+      ),
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+          child: Text(
+            'Itinéraires Populaires',
+            style: AppTextStyles.h3.copyWith(color: AppColors.primary),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        SizedBox(
+          height: 200,
+          child: ListView.builder(
+            padding: const EdgeInsets.only(left: AppSpacing.lg),
+            scrollDirection: Axis.horizontal,
+            itemCount: routes.length,
+            itemBuilder: (context, index) {
+              final route = routes[index];
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => RouteDetailsPage(route: route),
+                    ),
+                  );
+                },
+                child: Container(
+                  width: 280,
+                  margin: const EdgeInsets.only(right: AppSpacing.md),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
+                    image: DecorationImage(
+                      image: CachedNetworkImageProvider(route.coverImage),
+                      fit: BoxFit.cover,
+                      colorFilter: ColorFilter.mode(
+                        Colors.black.withOpacity(0.2),
+                        BlendMode.darken,
+                      ),
+                    ),
+                  ),
+                  child: Stack(
+                    children: [
+                      // Dégradé pour le texte
+                      Container(
+                        decoration: BoxDecoration(
+                           borderRadius: BorderRadius.circular(AppRadius.lg),
+                           gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [Colors.transparent, Colors.black.withOpacity(0.8)],
+                            stops: const [0.6, 1.0],
+                           )
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 16,
+                        left: 16,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                route.duration,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              route.title,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }
