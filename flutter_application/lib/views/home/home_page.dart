@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../providers/place_provider.dart';
 import '../../providers/favorites_provider.dart';
 import '../../utils/app_styles.dart';
 import '../../models/place.dart';
+import '../../widgets/shimmer_loading.dart';
+import '../../widgets/modern_components.dart';
 import '../details/place_details_page.dart';
 import '../favorites/favorites_page.dart';
 import '../maps/map_page.dart';
@@ -15,6 +19,7 @@ import '../details/article_page.dart';
 import 'package:latlong2/latlong.dart';
 import '../../models/travel_route.dart';
 import '../details/route_details_page.dart';
+import '../settings/settings_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -23,12 +28,17 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   int _currentIndex = 0;
+  late AnimationController _fabController;
 
   @override
   void initState() {
     super.initState();
+    _fabController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<PlaceProvider>().loadPlaces();
       context.read<FavoritesProvider>().loadFavorites();
@@ -36,36 +46,104 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void dispose() {
+    _fabController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: [_buildLandingContent(), const MapPage()],
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: _currentIndex == 0
+          ? SystemUiOverlayStyle.light
+          : SystemUiOverlayStyle.dark,
+      child: Scaffold(
+        extendBody: true,
+        body: IndexedStack(
+          index: _currentIndex,
+          children: [_buildLandingContent(), const MapPage()],
+        ),
+        bottomNavigationBar: _buildModernBottomNav(),
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 10,
-              offset: const Offset(0, -2),
+    );
+  }
+
+  Widget _buildModernBottomNav() {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.full),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _buildNavItem(
+              icon: Icons.home_outlined,
+              activeIcon: Icons.home_rounded,
+              label: 'Accueil',
+              index: 0,
+            ),
+            _buildNavItem(
+              icon: Icons.map_outlined,
+              activeIcon: Icons.map_rounded,
+              label: 'Carte',
+              index: 1,
             ),
           ],
         ),
-        child: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) => setState(() => _currentIndex = index),
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              activeIcon: Icon(Icons.home),
-              label: 'Accueil',
+      ),
+    ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.3);
+  }
+
+  Widget _buildNavItem({
+    required IconData icon,
+    required IconData activeIcon,
+    required String label,
+    required int index,
+  }) {
+    final isActive = _currentIndex == index;
+    return GestureDetector(
+      onTap: () => setState(() => _currentIndex = index),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: EdgeInsets.symmetric(
+          horizontal: isActive ? 24 : 16,
+          vertical: 12,
+        ),
+        decoration: BoxDecoration(
+          color: isActive
+              ? AppColors.primary.withValues(alpha: 0.1)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(AppRadius.full),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              isActive ? activeIcon : icon,
+              color: isActive ? AppColors.primary : AppColors.textMuted,
+              size: 24,
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.map_outlined),
-              activeIcon: Icon(Icons.map),
-              label: 'Carte',
-            ),
+            if (isActive) ...[
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: AppTextStyles.labelMedium.copyWith(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -74,6 +152,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildLandingContent() {
     return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -81,21 +160,38 @@ class _HomePageState extends State<HomePage> {
           _buildHeroSection(),
 
           // Description Section
-          _buildDescriptionSection(),
+          _buildDescriptionSection()
+              .animate()
+              .fadeIn(duration: 500.ms, delay: 200.ms)
+              .slideY(begin: 0.1),
 
           // Featured Places Section
-          _buildFeaturedPlacesSection(),
+          _buildFeaturedPlacesSection().animate().fadeIn(
+            duration: 500.ms,
+            delay: 300.ms,
+          ),
 
           // "Voir Plus" Button
-          _buildViewMoreButton(),
+          _buildViewMoreButton()
+              .animate()
+              .fadeIn(duration: 500.ms, delay: 400.ms)
+              .slideY(begin: 0.1),
 
           // Article Section
-          _buildArticleSection(),
-          
-          const SizedBox(height: AppSpacing.xl),
-          _buildRoutesSection(),
+          _buildArticleSection()
+              .animate()
+              .fadeIn(duration: 500.ms, delay: 500.ms)
+              .slideX(begin: 0.1),
 
           const SizedBox(height: AppSpacing.xl),
+
+          // Routes Section
+          _buildRoutesSection().animate().fadeIn(
+            duration: 500.ms,
+            delay: 600.ms,
+          ),
+
+          const SizedBox(height: 100), // Space for bottom nav
         ],
       ),
     );
@@ -104,31 +200,52 @@ class _HomePageState extends State<HomePage> {
   Widget _buildHeroSection() {
     return Stack(
       children: [
-        // Background Image
+        // Background Image with parallax effect
         Container(
-          height: 350,
+          height: 420,
           width: double.infinity,
           decoration: BoxDecoration(
             image: DecorationImage(
               image: const AssetImage('assets/images/home_image.jpg'),
               fit: BoxFit.cover,
               colorFilter: ColorFilter.mode(
-                Colors.black.withValues(alpha: 0.3),
+                Colors.black.withValues(alpha: 0.2),
                 BlendMode.darken,
               ),
             ),
           ),
         ),
 
-        // Gradient overlay
+        // Gradient overlay with modern curve
         Container(
-          height: 350,
+          height: 420,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [Colors.transparent, Colors.black.withValues(alpha: 0.7)],
-              stops: const [0.3, 1.0],
+              colors: [
+                Colors.transparent,
+                Colors.black.withValues(alpha: 0.3),
+                Colors.black.withValues(alpha: 0.8),
+              ],
+              stops: const [0.0, 0.5, 1.0],
+            ),
+          ),
+        ),
+
+        // Bottom curve
+        Positioned(
+          bottom: -2,
+          left: 0,
+          right: 0,
+          child: Container(
+            height: 30,
+            decoration: BoxDecoration(
+              color: Theme.of(context).scaffoldBackgroundColor,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
+              ),
             ),
           ),
         ),
@@ -136,27 +253,57 @@ class _HomePageState extends State<HomePage> {
         // App Bar overlaid
         SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.sm,
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.explore, color: Colors.white, size: 28),
-                    const SizedBox(width: AppSpacing.sm),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        gradient: AppColors.primaryGradient,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: AppShadows.coloredShadow(AppColors.primary),
+                      ),
+                      child: const Icon(
+                        Icons.explore_rounded,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.md),
                     Text(
                       'Travel Guide',
-                      style: AppTextStyles.h4.copyWith(color: Colors.white),
+                      style: AppTextStyles.h4.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ],
-                ),
-                IconButton(
-                  onPressed: () => Navigator.push(
-                    context,
-                    buildFadeSlideRoute(const FavoritesPage()),
-                  ),
-                  icon: const Icon(Icons.favorite_border, color: Colors.white),
-                ),
+                ).animate().fadeIn(duration: 500.ms).slideX(begin: -0.2),
+                Row(
+                  children: [
+                    GlassIconButton(
+                      icon: Icons.favorite_border_rounded,
+                      onPressed: () => Navigator.push(
+                        context,
+                        buildFadeSlideRoute(const FavoritesPage()),
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    GlassIconButton(
+                      icon: Icons.settings_rounded,
+                      onPressed: () => Navigator.push(
+                        context,
+                        buildFadeSlideRoute(const SettingsPage()),
+                      ),
+                    ),
+                  ],
+                ).animate().fadeIn(duration: 500.ms).slideX(begin: 0.2),
               ],
             ),
           ),
@@ -166,41 +313,67 @@ class _HomePageState extends State<HomePage> {
         Positioned(
           left: AppSpacing.lg,
           right: AppSpacing.lg,
-          bottom: AppSpacing.xl,
+          bottom: 60,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.md,
-                  vertical: AppSpacing.xs,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.primary,
-                  borderRadius: BorderRadius.circular(AppRadius.full),
-                ),
-                child: Text(
-                  'Explorez le Maroc',
-                  style: AppTextStyles.labelMedium.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.xs,
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: AppColors.primaryGradient,
+                      borderRadius: BorderRadius.circular(AppRadius.full),
+                      boxShadow: AppShadows.coloredShadow(AppColors.primary),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.auto_awesome,
+                          color: Colors.white,
+                          size: 14,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Explorez le Maroc',
+                          style: AppTextStyles.labelMedium.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                  .animate()
+                  .fadeIn(duration: 600.ms, delay: 200.ms)
+                  .slideY(begin: 0.3),
               const SizedBox(height: AppSpacing.md),
               Text(
-                'Conseils de voyage\nMaroc',
-                style: AppTextStyles.h1.copyWith(
-                  color: Colors.white,
-                  height: 1.2,
-                  shadows: [
-                    Shadow(
-                      color: Colors.black.withValues(alpha: 0.5),
-                      blurRadius: 8,
+                    'Votre Guide\nde Voyage',
+                    style: AppTextStyles.displayLarge.copyWith(
+                      shadows: [
+                        Shadow(
+                          color: Colors.black.withValues(alpha: 0.5),
+                          blurRadius: 20,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
+                  )
+                  .animate()
+                  .fadeIn(duration: 600.ms, delay: 300.ms)
+                  .slideY(begin: 0.2),
+              const SizedBox(height: AppSpacing.sm),
+              Text(
+                    'Découvrez les merveilles du royaume',
+                    style: AppTextStyles.bodyLarge.copyWith(
+                      color: Colors.white.withValues(alpha: 0.9),
+                    ),
+                  )
+                  .animate()
+                  .fadeIn(duration: 600.ms, delay: 400.ms)
+                  .slideY(begin: 0.2),
             ],
           ),
         ),
@@ -210,59 +383,71 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildDescriptionSection() {
     return Padding(
-      padding: const EdgeInsets.all(AppSpacing.lg),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.md,
+        AppSpacing.lg,
+        AppSpacing.lg,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Tous nos conseils pour préparer votre voyage au Maroc',
-            style: AppTextStyles.h3.copyWith(color: AppColors.primary),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Text(
-            'Découvrez notre guide de voyage au Maroc. Du désert du Sahara aux paysages '
-            'contrastés des montagnes de l\'Atlas, en passant par les villes impériales '
-            'et les plages exceptionnelles de la côte atlantique, vous plongerez à corps '
-            'perdu au cœur du Maroc.',
-            style: AppTextStyles.bodyLarge.copyWith(
-              color: AppColors.textSecondary,
-              height: 1.6,
+          // Welcoming text
+          Container(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(AppRadius.xl),
+              boxShadow: AppShadows.subtle,
             ),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-
-          // Divider with icon
-          Row(
-            children: [
-              const Expanded(child: Divider()),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-                child: Icon(
-                  Icons.landscape,
-                  color: AppColors.primary.withValues(alpha: 0.5),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.article_outlined,
+                        color: AppColors.primary,
+                        size: 22,
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Text(
+                        'Conseils de Voyage',
+                        style: AppTextStyles.h4.copyWith(
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              const Expanded(child: Divider()),
-            ],
+                const SizedBox(height: AppSpacing.md),
+                Text(
+                  'Du désert du Sahara aux paysages contrastés des montagnes de l\'Atlas, '
+                  'en passant par les villes impériales et les plages exceptionnelles '
+                  'de la côte atlantique.',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.textSecondary,
+                    height: 1.6,
+                  ),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: AppSpacing.lg),
+          const SizedBox(height: AppSpacing.xl),
 
-          // Section title
-          Center(
-            child: Text(
-              'Que faire au Maroc ?',
-              style: AppTextStyles.h2.copyWith(color: AppColors.primary),
-            ),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Center(
-            child: Text(
-              'Découvrez les merveilles incontournables du royaume',
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.textMuted,
-              ),
-              textAlign: TextAlign.center,
-            ),
+          // Section title with icon
+          SectionHeader(
+            title: 'Que faire au Maroc ?',
+            subtitle: 'Découvrez les merveilles incontournables',
+            icon: Icons.location_on_rounded,
           ),
         ],
       ),
@@ -272,53 +457,51 @@ class _HomePageState extends State<HomePage> {
   Widget _buildFeaturedPlacesSection() {
     return Consumer<PlaceProvider>(
       builder: (context, provider, _) {
-        // 1. État de chargement (Squelette horizontal)
+        // Loading state with shimmer
         if (provider.isLoading) {
           return SizedBox(
-            height: 220, // Hauteur fixe pour le conteneur de chargement
+            height: 240,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
               itemCount: 4,
               itemBuilder: (context, index) {
                 return Container(
-                  width: 160, // Largeur fixe pour l'effet "petite taille"
+                  width: 180,
                   margin: const EdgeInsets.only(right: AppSpacing.md),
-                  child: _buildFeaturedSkeletonCard(),
+                  child: const ShimmerFeaturedCard(),
                 );
               },
             ),
           );
         }
 
-        // Récupérer les 6 premiers lieux
         final featuredPlaces = provider.places.take(6).toList();
 
-        // 2. Le Carrousel Automatique
+        // Modern Carousel
         return CarouselSlider.builder(
           itemCount: featuredPlaces.length,
           itemBuilder: (context, index, realIndex) {
             final place = featuredPlaces[index];
-            // On enveloppe la card dans un container pour gérer les marges internes du carrousel
             return Container(
               margin: const EdgeInsets.symmetric(horizontal: 5.0),
-              child: _buildFeaturedCard(place),
+              child: _buildModernFeaturedCard(place)
+                  .animate(delay: (index * 100).ms)
+                  .fadeIn(duration: 400.ms)
+                  .scale(begin: const Offset(0.95, 0.95)),
             );
           },
           options: CarouselOptions(
-            height: 220.0, // Hauteur réduite pour des cartes "petite taille"
-            
-            // viewportFraction gère la largeur des cartes. 
-            // 0.45 signifie que la carte prend 45% de la largeur de l'écran (donc petite).
-            viewportFraction: 0.45, 
-            
-            enableInfiniteScroll: true, // Défilement infini
-            autoPlay: true, // Défilement automatique activé
-            autoPlayInterval: const Duration(seconds: 3), // Vitesse du défilement
-            autoPlayAnimationDuration: const Duration(milliseconds: 800),
-            autoPlayCurve: Curves.fastOutSlowIn,
-            enlargeCenterPage: true, // Met légèrement en avant la carte centrale (optionnel)
-            enlargeFactor: 0.15, // Intensité de l'agrandissement central
+            height: 260.0,
+            viewportFraction: 0.48,
+            enableInfiniteScroll: true,
+            autoPlay: true,
+            autoPlayInterval: const Duration(seconds: 4),
+            autoPlayAnimationDuration: const Duration(milliseconds: 900),
+            autoPlayCurve: Curves.easeInOutCubic,
+            enlargeCenterPage: true,
+            enlargeFactor: 0.2,
+            enlargeStrategy: CenterPageEnlargeStrategy.zoom,
             scrollDirection: Axis.horizontal,
           ),
         );
@@ -326,7 +509,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildFeaturedCard(Place place) {
+  Widget _buildModernFeaturedCard(Place place) {
     return GestureDetector(
       onTap: () => Navigator.push(
         context,
@@ -334,36 +517,39 @@ class _HomePageState extends State<HomePage> {
       ),
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(AppRadius.lg),
-          boxShadow: AppShadows.medium,
+          borderRadius: BorderRadius.circular(AppRadius.xl),
+          boxShadow: AppShadows.large,
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(AppRadius.lg),
+          borderRadius: BorderRadius.circular(AppRadius.xl),
           child: Stack(
             fit: StackFit.expand,
             children: [
-              // Image
-              CachedNetworkImage(
-                imageUrl: place.images.isNotEmpty
-                    ? place.images.first
-                    : 'https://via.placeholder.com/300',
-                fit: BoxFit.cover,
-                placeholder: (context, url) => Container(
-                  color: AppColors.secondary.withValues(alpha: 0.3),
-                  child: const Center(
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: AppColors.primary,
+              // Image with hero animation ready
+              Hero(
+                tag: 'place_image_${place.id}',
+                child: CachedNetworkImage(
+                  imageUrl: place.images.isNotEmpty
+                      ? place.images.first
+                      : 'https://via.placeholder.com/300',
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Container(
+                    color: AppColors.secondary.withValues(alpha: 0.3),
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.primary,
+                      ),
                     ),
                   ),
-                ),
-                errorWidget: (context, url, error) => Container(
-                  color: AppColors.secondary.withValues(alpha: 0.3),
-                  child: const Icon(Icons.image, color: AppColors.textMuted),
+                  errorWidget: (context, url, error) => Container(
+                    color: AppColors.secondary.withValues(alpha: 0.3),
+                    child: const Icon(Icons.image, color: AppColors.textMuted),
+                  ),
                 ),
               ),
 
-              // Gradient overlay
+              // Modern gradient overlay
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -371,43 +557,64 @@ class _HomePageState extends State<HomePage> {
                     end: Alignment.bottomCenter,
                     colors: [
                       Colors.transparent,
-                      Colors.black.withValues(alpha: 0.8),
+                      Colors.black.withValues(alpha: 0.2),
+                      Colors.black.withValues(alpha: 0.9),
                     ],
-                    stops: const [0.4, 1.0],
+                    stops: const [0.3, 0.6, 1.0],
                   ),
                 ),
               ),
 
-              // Rating badge
+              // Rating badge with glass effect
               Positioned(
-                top: AppSpacing.sm,
-                right: AppSpacing.sm,
-                child: Container(
+                top: AppSpacing.md,
+                right: AppSpacing.md,
+                child: GlassDarkContainer(
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.sm,
-                    vertical: 2,
+                    vertical: 4,
                   ),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.6),
-                    borderRadius: BorderRadius.circular(AppRadius.full),
-                  ),
+                  borderRadius: AppRadius.full,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Icon(
-                        Icons.star,
-                        size: 12,
+                        Icons.star_rounded,
+                        size: 14,
                         color: AppColors.ratingStar,
                       ),
-                      const SizedBox(width: 2),
+                      const SizedBox(width: 3),
                       Text(
                         place.rating.toStringAsFixed(1),
                         style: AppTextStyles.labelSmall.copyWith(
                           color: Colors.white,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ],
+                  ),
+                ),
+              ),
+
+              // Category badge
+              Positioned(
+                top: AppSpacing.md,
+                left: AppSpacing.md,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.getCategoryColorFromEnum(place.category),
+                    borderRadius: BorderRadius.circular(AppRadius.full),
+                  ),
+                  child: Text(
+                    placeCategoryToDisplayString(place.category),
+                    style: AppTextStyles.labelSmall.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
@@ -422,22 +629,22 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     Text(
                       place.name,
-                      style: AppTextStyles.labelLarge.copyWith(
+                      style: AppTextStyles.cardTitle.copyWith(
                         color: Colors.white,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w700,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 4),
                     Row(
                       children: [
                         Icon(
-                          Icons.location_on,
-                          size: 12,
+                          Icons.location_on_rounded,
+                          size: 14,
                           color: AppColors.secondaryLight,
                         ),
-                        const SizedBox(width: 2),
+                        const SizedBox(width: 4),
                         Text(
                           place.city,
                           style: AppTextStyles.labelSmall.copyWith(
@@ -456,93 +663,16 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Simple skeleton placeholder for featured cards
-  Widget _buildFeaturedSkeletonCard() {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        color: AppColors.secondary.withValues(alpha: 0.2),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    AppColors.secondary.withValues(alpha: 0.3),
-                    AppColors.secondaryDark.withValues(alpha: 0.4),
-                  ],
-                ),
-              ),
-            ),
-            Positioned(
-              left: AppSpacing.md,
-              right: AppSpacing.md,
-              bottom: AppSpacing.md,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    height: 14,
-                    width: 90,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.5),
-                      borderRadius: BorderRadius.circular(AppRadius.sm),
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  Container(
-                    height: 10,
-                    width: 60,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.4),
-                      borderRadius: BorderRadius.circular(AppRadius.sm),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildViewMoreButton() {
     return Padding(
       padding: const EdgeInsets.all(AppSpacing.lg),
       child: Center(
-        child: ElevatedButton(
+        child: GradientButton(
+          text: 'VOIR TOUS LES LIEUX',
+          icon: Icons.arrow_forward_rounded,
           onPressed: () => Navigator.push(
             context,
-              buildFadeSlideRoute(const AllPlacesPage()),
-          ),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.xl,
-              vertical: AppSpacing.md,
-            ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppRadius.full),
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                'VOIR TOUS LES LIEUX',
-                style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              const Icon(Icons.arrow_forward, size: 18),
-            ],
+            buildFadeSlideRoute(const AllPlacesPage()),
           ),
         ),
       ),
@@ -558,54 +688,52 @@ class _HomePageState extends State<HomePage> {
         );
       },
       child: Container(
-        height: 260, // On donne de la hauteur pour l'impact visuel
+        height: 280,
         margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20), // Coins très arrondis
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withOpacity(0.4), // Ombre colorée
-              blurRadius: 20,
-              offset: const Offset(0, 10),
-            ),
-          ],
+          borderRadius: BorderRadius.circular(AppRadius.xxl),
+          boxShadow: AppShadows.coloredShadow(AppColors.primary),
           image: const DecorationImage(
-            image: AssetImage('assets/images/todgha_gorges.jpg'), 
+            image: AssetImage('assets/images/todgha_gorges.jpg'),
             fit: BoxFit.cover,
-            ),
+          ),
         ),
         child: Stack(
           children: [
-            // 1. Le Dégradé (pour que le texte soit lisible)
+            // Gradient overlay
             Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(AppRadius.xxl),
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
                     Colors.transparent,
-                    Colors.black.withOpacity(0.3),
-                    Colors.black.withOpacity(0.9),
+                    Colors.black.withValues(alpha: 0.2),
+                    Colors.black.withValues(alpha: 0.9),
                   ],
-                  stops: const [0.3, 0.6, 1.0],
+                  stops: const [0.3, 0.5, 1.0],
                 ),
               ),
             ),
 
-            // 2. Le Contenu Texte + Badge
+            // Content
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(AppSpacing.lg),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  // Badge "Inspiration"
+                  // Badge
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(8),
+                      gradient: AppColors.primaryGradient,
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
+                      boxShadow: AppShadows.glow(AppColors.primary),
                     ),
                     child: const Text(
                       'GUIDE DE VOYAGE',
@@ -617,53 +745,48 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.md),
 
-                  // Grand Titre
-                  const Text(
+                  // Title
+                  Text(
                     'Où partir au Maroc ?',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      height: 1.1,
+                    style: AppTextStyles.displayMedium.copyWith(
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.sm),
 
-                  // Sous-titre descriptif
+                  // Subtitle
                   Text(
                     'Des montagnes de l\'Atlas aux dunes du Sahara, découvrez les régions qui font rêver.',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.9),
-                      fontSize: 14,
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: Colors.white.withValues(alpha: 0.9),
                       height: 1.4,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppSpacing.lg),
 
-                  // Bouton "Lire la suite" stylisé
+                  // Read more button
                   Row(
                     children: [
-                      const Text(
+                      Text(
                         'Lire l\'article',
-                        style: TextStyle(
+                        style: AppTextStyles.labelLarge.copyWith(
                           color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppSpacing.sm),
                       Container(
-                        padding: const EdgeInsets.all(4),
+                        padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(color: Colors.white, width: 2),
                         ),
                         child: const Icon(
-                          Icons.arrow_forward,
+                          Icons.arrow_forward_rounded,
                           color: Colors.white,
                           size: 14,
                         ),
@@ -680,110 +803,118 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildRoutesSection() {
-    // Liste enrichie avec 4 trajets
     final List<TravelRoute> routes = [
-      // TRAJET 1 : LE SUD
       TravelRoute(
         title: "Le Grand Sud",
         duration: "4 Jours",
-        coverImage: "https://images.unsplash.com/photo-1548588627-f978862b85e1?w=800",
+        coverImage:
+            "https://images.unsplash.com/photo-1548588627-f978862b85e1?w=800",
         stations: [
           RouteStation(
             name: "Marrakech",
-            image: "https://images.unsplash.com/photo-1597212618440-806262de4f6b?w=400",
+            image:
+                "https://images.unsplash.com/photo-1597212618440-806262de4f6b?w=400",
             coordinate: const LatLng(31.6295, -7.9811),
             description: "Point de départ, la ville rouge et ses souks.",
           ),
           RouteStation(
             name: "Aït Ben Haddou",
-            image: "https://images.unsplash.com/photo-1576014131795-d440191a8e8b?w=400",
+            image:
+                "https://images.unsplash.com/photo-1576014131795-d440191a8e8b?w=400",
             coordinate: const LatLng(31.0470, -7.1319),
             description: "Ksar historique classé à l'UNESCO.",
           ),
           RouteStation(
             name: "Ouarzazate",
-            image: "https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=400",
+            image:
+                "https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=400",
             coordinate: const LatLng(30.9189, -6.9196),
             description: "La porte du désert et ses studios de cinéma.",
           ),
         ],
       ),
-
-      // TRAJET 2 : LA CÔTE
       TravelRoute(
         title: "Route Côtière",
         duration: "3 Jours",
-        coverImage: "https://images.unsplash.com/photo-1580618055006-039c0490eb7e?w=800",
+        coverImage:
+            "https://images.unsplash.com/photo-1580618055006-039c0490eb7e?w=800",
         stations: [
-           RouteStation(
+          RouteStation(
             name: "Essaouira",
-            image: "https://images.unsplash.com/photo-1575883398906-8b29c0a52f9b?w=400",
+            image:
+                "https://images.unsplash.com/photo-1575883398906-8b29c0a52f9b?w=400",
             coordinate: const LatLng(31.5085, -9.7595),
             description: "La cité des vents et ses remparts bleus.",
           ),
-           RouteStation(
+          RouteStation(
             name: "Agadir",
-            image: "https://images.unsplash.com/photo-1565532386869-7c4856033873?w=400",
+            image:
+                "https://images.unsplash.com/photo-1565532386869-7c4856033873?w=400",
             coordinate: const LatLng(30.4278, -9.5981),
             description: "Plages immenses et soleil toute l'année.",
           ),
-           RouteStation(
+          RouteStation(
             name: "Taghazout",
-            image: "https://images.unsplash.com/photo-1532960401447-7dd05bef20b0?w=400",
+            image:
+                "https://images.unsplash.com/photo-1532960401447-7dd05bef20b0?w=400",
             coordinate: const LatLng(30.5449, -9.7091),
             description: "Le paradis des surfeurs et des couchers de soleil.",
           ),
         ],
       ),
-
-      // TRAJET 3 : LE NORD (Nouveau)
       TravelRoute(
         title: "Perles du Nord",
         duration: "5 Jours",
-        coverImage: "https://images.unsplash.com/photo-1564507004663-b6dfb3c824d5?w=800", // Chefchaouen
+        coverImage:
+            "https://images.unsplash.com/photo-1564507004663-b6dfb3c824d5?w=800",
         stations: [
           RouteStation(
             name: "Tanger",
-            image: "https://images.unsplash.com/photo-1587595431973-160d0d94add1?w=400",
+            image:
+                "https://images.unsplash.com/photo-1587595431973-160d0d94add1?w=400",
             coordinate: const LatLng(35.7595, -5.8340),
             description: "La ville blanche face à l'Europe.",
           ),
           RouteStation(
             name: "Chefchaouen",
-            image: "https://images.unsplash.com/photo-1518182170546-0766ce6fec56?w=400",
+            image:
+                "https://images.unsplash.com/photo-1518182170546-0766ce6fec56?w=400",
             coordinate: const LatLng(35.1716, -5.2697),
             description: "La célèbre perle bleue dans les montagnes.",
           ),
           RouteStation(
             name: "Akchour",
-            image: "https://images.unsplash.com/photo-1667852627916-16f55694c256?w=400",
+            image:
+                "https://images.unsplash.com/photo-1667852627916-16f55694c256?w=400",
             coordinate: const LatLng(35.2369, -5.1456),
             description: "Cascades cristallines et randonnées.",
           ),
         ],
       ),
-
-      // TRAJET 4 : VILLES IMPÉRIALES (Nouveau)
       TravelRoute(
         title: "Impérial",
         duration: "6 Jours",
-        coverImage: "https://images.unsplash.com/photo-1535201104882-7d22b622f980?w=800", // Fes
+        coverImage:
+            "https://images.unsplash.com/photo-1535201104882-7d22b622f980?w=800",
         stations: [
           RouteStation(
             name: "Fès",
-            image: "https://images.unsplash.com/photo-1557754388-c7a6e1233840?w=400",
+            image:
+                "https://images.unsplash.com/photo-1557754388-c7a6e1233840?w=400",
             coordinate: const LatLng(34.0181, -5.0078),
             description: "La capitale spirituelle et sa médina millénaire.",
           ),
           RouteStation(
             name: "Meknès",
-            image: "https://images.unsplash.com/photo-1571409249764-169826d97c36?w=400",
+            image:
+                "https://images.unsplash.com/photo-1571409249764-169826d97c36?w=400",
             coordinate: const LatLng(33.8938, -5.5516),
             description: "La ville aux cent minarets et Bab Mansour.",
           ),
           RouteStation(
             name: "Volubilis",
-            image: "https://images.unsplash.com/photo-1596530663737-293630f9d936?w=400",
+            image:
+                "https://images.unsplash.com/photo-1596530663737-293630f9d936?w=400",
             coordinate: const LatLng(34.0725, -5.5538),
             description: "Ruines romaines exceptionnellement préservées.",
           ),
@@ -794,100 +925,155 @@ class _HomePageState extends State<HomePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-          child: Text(
-            'Itinéraires Populaires',
-            style: AppTextStyles.h3.copyWith(color: AppColors.primary),
-          ),
+        SectionHeader(
+          title: 'Itinéraires Populaires',
+          subtitle: 'Des circuits prêts à l\'emploi',
+          icon: Icons.route_rounded,
+          actionText: 'Voir tout',
+          onActionTap: () {
+            // Navigate to all routes
+          },
         ),
         const SizedBox(height: AppSpacing.md),
         SizedBox(
-          height: 200,
+          height: 220,
           child: ListView.builder(
+            physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.only(left: AppSpacing.lg),
             scrollDirection: Axis.horizontal,
             itemCount: routes.length,
             itemBuilder: (context, index) {
               final route = routes[index];
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => RouteDetailsPage(route: route),
-                    ),
-                  );
-                },
-                child: Container(
-                  width: 280,
-                  margin: const EdgeInsets.only(right: AppSpacing.md),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(AppRadius.lg),
-                    image: DecorationImage(
-                      image: CachedNetworkImageProvider(route.coverImage),
-                      fit: BoxFit.cover,
-                      colorFilter: ColorFilter.mode(
-                        Colors.black.withOpacity(0.2),
-                        BlendMode.darken,
-                      ),
-                    ),
-                  ),
-                  child: Stack(
-                    children: [
-                      // Dégradé pour le texte
-                      Container(
-                        decoration: BoxDecoration(
-                           borderRadius: BorderRadius.circular(AppRadius.lg),
-                           gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [Colors.transparent, Colors.black.withOpacity(0.8)],
-                            stops: const [0.6, 1.0],
-                           )
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 16,
-                        left: 16,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: AppColors.primary,
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Text(
-                                route.duration,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              route.title,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
+              return _buildModernRouteCard(route, index);
             },
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildModernRouteCard(TravelRoute route, int index) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => RouteDetailsPage(route: route)),
+        );
+      },
+      child:
+          Container(
+                width: 300,
+                margin: const EdgeInsets.only(right: AppSpacing.md),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(AppRadius.xl),
+                  boxShadow: AppShadows.medium,
+                  image: DecorationImage(
+                    image: CachedNetworkImageProvider(route.coverImage),
+                    fit: BoxFit.cover,
+                    colorFilter: ColorFilter.mode(
+                      Colors.black.withValues(alpha: 0.15),
+                      BlendMode.darken,
+                    ),
+                  ),
+                ),
+                child: Stack(
+                  children: [
+                    // Gradient overlay
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(AppRadius.xl),
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            Colors.black.withValues(alpha: 0.85),
+                          ],
+                          stops: const [0.5, 1.0],
+                        ),
+                      ),
+                    ),
+
+                    // Content
+                    Padding(
+                      padding: const EdgeInsets.all(AppSpacing.md),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          // Duration badge
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              gradient: AppColors.primaryGradient,
+                              borderRadius: BorderRadius.circular(
+                                AppRadius.full,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.schedule_rounded,
+                                  color: Colors.white,
+                                  size: 12,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  route.duration,
+                                  style: AppTextStyles.labelSmall.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.sm),
+
+                          // Title
+                          Text(
+                            route.title,
+                            style: AppTextStyles.h4.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.xs),
+
+                          // Stations preview
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.place_rounded,
+                                color: Colors.white70,
+                                size: 14,
+                              ),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  route.stations.map((s) => s.name).join(' → '),
+                                  style: AppTextStyles.labelSmall.copyWith(
+                                    color: Colors.white70,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              )
+              .animate(delay: (index * 100).ms)
+              .fadeIn(duration: 400.ms)
+              .slideX(begin: 0.1),
     );
   }
 }

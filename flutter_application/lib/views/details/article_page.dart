@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart'; // Assurez-vous d'avoir ce package
+// Assurez-vous d'avoir ce package
 import '../../utils/app_styles.dart';
 
 class ArticlePage extends StatelessWidget {
@@ -8,23 +8,28 @@ class ArticlePage extends StatelessWidget {
   static const List<Map<String, String>> _sections = [
     {
       'title': 'Marrakech et le sud',
-      'content': 'Marrakech est une ville fascinante qui mêle traditions et modernité. La médina, avec la place Jemaa el-Fna et ses souks animés, est un incontournable. Le palais de la Bahia, les jardins Majorelle et la médersa Ben Youssef sont des sites emblématiques à visiter.'
+      'content':
+          'Marrakech est une ville fascinante qui mêle traditions et modernité. La médina, avec la place Jemaa el-Fna et ses souks animés, est un incontournable. Le palais de la Bahia, les jardins Majorelle et la médersa Ben Youssef sont des sites emblématiques à visiter.',
     },
     {
       'title': 'Fès et le nord',
-      'content': 'Fès est une ville chargée d’histoire avec l’une des médinas les mieux préservées du monde. La médersa Bou Inania et l’université Al Quaraouiyine sont des lieux incontournables. Plus au nord, Chefchaouen, la ville bleue, offre un cadre authentique.'
+      'content':
+          'Fès est une ville chargée d’histoire avec l’une des médinas les mieux préservées du monde. La médersa Bou Inania et l’université Al Quaraouiyine sont des lieux incontournables. Plus au nord, Chefchaouen, la ville bleue, offre un cadre authentique.',
     },
     {
       'title': 'Casablanca & l\'Océan',
-      'content': 'Casablanca est une métropole moderne où se mêlent architecture coloniale et infrastructures contemporaines. La mosquée Hassan II est l’un des édifices les plus impressionnants du pays. La côte atlantique séduit par ses plages et son climat doux.'
+      'content':
+          'Casablanca est une métropole moderne où se mêlent architecture coloniale et infrastructures contemporaines. La mosquée Hassan II est l’un des édifices les plus impressionnants du pays. La côte atlantique séduit par ses plages et son climat doux.',
     },
     {
       'title': 'Le Sahara Infini',
-      'content': 'Le Sahara marocain est une destination de rêve pour les amateurs de grands espaces. Les dunes de Merzouga et de Chegaga offrent des panoramas exceptionnels et des expériences inoubliables en bivouac sous les étoiles.'
+      'content':
+          'Le Sahara marocain est une destination de rêve pour les amateurs de grands espaces. Les dunes de Merzouga et de Chegaga offrent des panoramas exceptionnels et des expériences inoubliables en bivouac sous les étoiles.',
     },
     {
       'title': 'L’Atlas et les Berbères',
-      'content': 'Le Haut Atlas est idéal pour la randonnée. Le mont Toubkal attire les passionnés de trekking. Les villages berbères comme Imlil offrent une immersion authentique dans la culture montagnarde marocaine.'
+      'content':
+          'Le Haut Atlas est idéal pour la randonnée. Le mont Toubkal attire les passionnés de trekking. Les villages berbères comme Imlil offrent une immersion authentique dans la culture montagnarde marocaine.',
     },
   ];
 
@@ -39,12 +44,17 @@ class ArticlePage extends StatelessWidget {
 
           // 2. Le Contenu
           SliverPadding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, 40),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.lg,
+              AppSpacing.lg,
+              40,
+            ),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
                 // Intro et Titre
                 _buildIntroHeader(),
-                
+
                 const SizedBox(height: AppSpacing.xl),
                 const Divider(height: 1, color: Colors.black12),
                 const SizedBox(height: AppSpacing.xl),
@@ -58,10 +68,9 @@ class ArticlePage extends StatelessWidget {
                     isLast: entry.key == _sections.length - 1,
                   );
                 }),
-                  
-                  const SizedBox(height: AppSpacing.xl),
-                  _buildQualitiesSection(),
 
+                const SizedBox(height: AppSpacing.xl),
+                _buildQualitiesSection(),
 
                 // Footer Auteur
                 const SizedBox(height: AppSpacing.xl),
@@ -92,14 +101,15 @@ class ArticlePage extends StatelessWidget {
         ),
       ),
       flexibleSpace: FlexibleSpaceBar(
-        stretchModes: const [StretchMode.zoomBackground, StretchMode.blurBackground],
+        stretchModes: const [
+          StretchMode.zoomBackground,
+          StretchMode.blurBackground,
+        ],
         background: Stack(
           fit: StackFit.expand,
           children: [
             // Image de fond
-              Image.asset('assets/images/banner_article.jpg',
-              fit: BoxFit.cover,
-            ),
+            Image.asset('assets/images/banner_article.jpg', fit: BoxFit.cover),
             // Dégradé sombre pour le texte
             Container(
               decoration: BoxDecoration(
@@ -124,7 +134,10 @@ class ArticlePage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.primary,
                       borderRadius: BorderRadius.circular(4),
@@ -132,10 +145,10 @@ class ArticlePage extends StatelessWidget {
                     child: const Text(
                       'GUIDE COMPLET',
                       style: TextStyle(
-                        color: Colors.white, 
-                        fontSize: 10, 
+                        color: Colors.white,
+                        fontSize: 10,
                         fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2
+                        letterSpacing: 1.2,
                       ),
                     ),
                   ),
@@ -172,7 +185,11 @@ class ArticlePage extends StatelessWidget {
               style: AppTextStyles.labelSmall.copyWith(color: Colors.grey),
             ),
             const SizedBox(width: 20),
-            const Icon(Icons.calendar_today_outlined, size: 16, color: Colors.grey),
+            const Icon(
+              Icons.calendar_today_outlined,
+              size: 16,
+              color: Colors.grey,
+            ),
             const SizedBox(width: 5),
             Text(
               'Oct 2023',
@@ -196,10 +213,10 @@ class ArticlePage extends StatelessWidget {
 
   // Widget pour chaque section avec design "Timeline"
   Widget _buildSectionItem({
-    required int index, 
-    required String title, 
+    required int index,
+    required String title,
     required String content,
-    required bool isLast
+    required bool isLast,
   }) {
     // Format du numéro (01, 02...)
     final number = (index + 1).toString().padLeft(2, '0');
@@ -219,7 +236,7 @@ class ArticlePage extends StatelessWidget {
                   color: AppColors.primary.withOpacity(0.5),
                 ),
               ),
-              if (!isLast) 
+              if (!isLast)
                 Expanded(
                   child: Container(
                     width: 2,
@@ -230,7 +247,7 @@ class ArticlePage extends StatelessWidget {
             ],
           ),
           const SizedBox(width: AppSpacing.lg),
-          
+
           // Colonne de Droite (Contenu)
           Expanded(
             child: Padding(
@@ -291,7 +308,7 @@ class ArticlePage extends StatelessWidget {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -319,7 +336,7 @@ class ArticlePage extends StatelessWidget {
           ),
         ),
         const SizedBox(height: AppSpacing.md),
-        
+
         Container(
           padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
           decoration: BoxDecoration(
@@ -354,11 +371,7 @@ class ArticlePage extends StatelessWidget {
               ),
             ],
           ),
-          child: Icon(
-            icon,
-            color: AppColors.primary,
-            size: 24,
-          ),
+          child: Icon(icon, color: AppColors.primary, size: 24),
         ),
         const SizedBox(height: 8),
         Text(

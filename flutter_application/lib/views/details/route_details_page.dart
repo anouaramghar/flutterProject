@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../models/travel_route.dart';
 import '../../utils/app_styles.dart';
@@ -37,15 +36,18 @@ class _RouteDetailsPageState extends State<RouteDetailsPage> {
             children: [
               // Fond de carte (Style Premium)
               TileLayer(
-                urlTemplate: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
+                urlTemplate:
+                    'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
                 subdomains: const ['a', 'b', 'c'],
               ),
-              
+
               // Dessiner la ligne du trajet
               PolylineLayer(
                 polylines: [
                   Polyline(
-                    points: widget.route.stations.map((s) => s.coordinate).toList(),
+                    points: widget.route.stations
+                        .map((s) => s.coordinate)
+                        .toList(),
                     strokeWidth: 4.0,
                     color: AppColors.primary,
                   ),
@@ -67,15 +69,22 @@ class _RouteDetailsPageState extends State<RouteDetailsPage> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           shape: BoxShape.circle,
-                          border: Border.all(color: AppColors.primary, width: 2),
+                          border: Border.all(
+                            color: AppColors.primary,
+                            width: 2,
+                          ),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.2),
                               blurRadius: 6,
-                            )
+                            ),
                           ],
                         ),
-                        child: const Icon(Icons.location_on, color: AppColors.primary, size: 24),
+                        child: const Icon(
+                          Icons.location_on,
+                          color: AppColors.primary,
+                          size: 24,
+                        ),
                       ),
                     ),
                   );
@@ -101,11 +110,19 @@ class _RouteDetailsPageState extends State<RouteDetailsPage> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(30),
-                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10)],
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 10,
+                        ),
+                      ],
                     ),
                     child: Text(
                       widget.route.title,
@@ -174,10 +191,7 @@ class _RouteDetailsPageState extends State<RouteDetailsPage> {
                 const SizedBox(height: 4),
                 Text(
                   station.description,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),

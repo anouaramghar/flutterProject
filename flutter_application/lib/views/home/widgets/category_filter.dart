@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../utils/app_styles.dart';
 import '../../../models/place.dart';
+import '../../../utils/app_styles.dart';
 
 class CategoryFilter extends StatelessWidget {
   final PlaceCategory? selectedCategory;
@@ -12,105 +12,148 @@ class CategoryFilter extends StatelessWidget {
     required this.onCategorySelected,
   });
 
-  static const List<Map<String, dynamic>> categories = [
-    {'category': PlaceCategory.monument, 'icon': Icons.account_balance},
-    {'category': PlaceCategory.plage, 'icon': Icons.beach_access},
-    {'category': PlaceCategory.nature, 'icon': Icons.park},
-    {'category': PlaceCategory.medina, 'icon': Icons.location_city},
-    {'category': PlaceCategory.musee, 'icon': Icons.museum},
-    {'category': PlaceCategory.desert, 'icon': Icons.landscape},
-    {'category': PlaceCategory.montagne, 'icon': Icons.terrain},
-    {'category': PlaceCategory.jardin, 'icon': Icons.local_florist},
-    {'category': PlaceCategory.ville, 'icon': Icons.apartment},
-  ];
-
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 50,
-      child: ListView.builder(
+      child: ListView(
         scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-        itemCount: categories.length + 1, // +1 for "All" chip
-        itemBuilder: (context, index) {
-          if (index == 0) {
-            // "All" chip
-            return _buildChip(
-              context,
-              label: 'Tous',
-              icon: Icons.apps,
-              isSelected: selectedCategory == null,
-              onTap: () => onCategorySelected(null),
-            );
-          }
-
-          final config = categories[index - 1];
-          final category = config['category'] as PlaceCategory;
-          final icon = config['icon'] as IconData;
-          final label = placeCategoryToDisplayString(category);
-
-          return _buildChip(
-            context,
-            label: label,
-            icon: icon,
-            isSelected: selectedCategory == category,
-            onTap: () => onCategorySelected(category),
-            color: AppColors.getCategoryColorFromEnum(category),
-          );
-        },
+        children: [
+          _buildCategoryChip(
+            label: 'Tout',
+            icon: Icons.apps_rounded,
+            isSelected: selectedCategory == null,
+            onTap: () => onCategorySelected(null),
+            color: AppColors.primary,
+          ),
+          _buildCategoryChip(
+            label: placeCategoryToDisplayString(PlaceCategory.monument),
+            icon: Icons.account_balance_rounded,
+            isSelected: selectedCategory == PlaceCategory.monument,
+            onTap: () => onCategorySelected(PlaceCategory.monument),
+            color: AppColors.monument,
+          ),
+          _buildCategoryChip(
+            label: placeCategoryToDisplayString(PlaceCategory.plage),
+            icon: Icons.beach_access_rounded,
+            isSelected: selectedCategory == PlaceCategory.plage,
+            onTap: () => onCategorySelected(PlaceCategory.plage),
+            color: AppColors.plage,
+          ),
+          _buildCategoryChip(
+            label: placeCategoryToDisplayString(PlaceCategory.nature),
+            icon: Icons.park_rounded,
+            isSelected: selectedCategory == PlaceCategory.nature,
+            onTap: () => onCategorySelected(PlaceCategory.nature),
+            color: AppColors.nature,
+          ),
+          _buildCategoryChip(
+            label: placeCategoryToDisplayString(PlaceCategory.medina),
+            icon: Icons.location_city_rounded,
+            isSelected: selectedCategory == PlaceCategory.medina,
+            onTap: () => onCategorySelected(PlaceCategory.medina),
+            color: AppColors.medina,
+          ),
+          _buildCategoryChip(
+            label: placeCategoryToDisplayString(PlaceCategory.musee),
+            icon: Icons.museum_rounded,
+            isSelected: selectedCategory == PlaceCategory.musee,
+            onTap: () => onCategorySelected(PlaceCategory.musee),
+            color: AppColors.musee,
+          ),
+          _buildCategoryChip(
+            label: placeCategoryToDisplayString(PlaceCategory.desert),
+            icon: Icons.terrain_rounded,
+            isSelected: selectedCategory == PlaceCategory.desert,
+            onTap: () => onCategorySelected(PlaceCategory.desert),
+            color: AppColors.desert,
+          ),
+          _buildCategoryChip(
+            label: placeCategoryToDisplayString(PlaceCategory.montagne),
+            icon: Icons.landscape_rounded,
+            isSelected: selectedCategory == PlaceCategory.montagne,
+            onTap: () => onCategorySelected(PlaceCategory.montagne),
+            color: AppColors.montagne,
+          ),
+          _buildCategoryChip(
+            label: placeCategoryToDisplayString(PlaceCategory.jardin),
+            icon: Icons.local_florist_rounded,
+            isSelected: selectedCategory == PlaceCategory.jardin,
+            onTap: () => onCategorySelected(PlaceCategory.jardin),
+            color: AppColors.jardin,
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildChip(
-    BuildContext context, {
+  Widget _buildCategoryChip({
     required String label,
     required IconData icon,
     required bool isSelected,
     required VoidCallback onTap,
-    Color? color,
+    required Color color,
   }) {
-    final chipColor = color ?? AppColors.primary;
-
-    return Padding(
-      padding: const EdgeInsets.only(right: AppSpacing.sm),
-      child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md,
-            vertical: AppSpacing.sm,
-          ),
-          decoration: BoxDecoration(
-            color: isSelected ? chipColor : AppColors.surface,
-            borderRadius: BorderRadius.circular(AppRadius.full),
-            border: Border.all(
-              color: isSelected
-                  ? chipColor
-                  : AppColors.textMuted.withOpacity(0.3),
-              width: 1.5,
-            ),
-            boxShadow: isSelected ? AppShadows.small : null,
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+        margin: const EdgeInsets.only(right: AppSpacing.sm),
+        padding: EdgeInsets.symmetric(
+          horizontal: isSelected ? AppSpacing.md : AppSpacing.sm + 4,
+          vertical: AppSpacing.sm,
+        ),
+        decoration: BoxDecoration(
+          gradient: isSelected
+              ? LinearGradient(colors: [color, color.withValues(alpha: 0.85)])
+              : null,
+          color: isSelected ? null : AppColors.surface,
+          borderRadius: BorderRadius.circular(AppRadius.full),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: color.withValues(alpha: 0.3),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : AppShadows.subtle,
+          border: isSelected
+              ? null
+              : Border.all(color: AppColors.textMuted.withValues(alpha: 0.15)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding: EdgeInsets.all(isSelected ? 0 : 4),
+              decoration: isSelected
+                  ? null
+                  : BoxDecoration(
+                      color: color.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+              child: Icon(
                 icon,
-                size: 18,
-                color: isSelected ? Colors.white : chipColor,
+                size: isSelected ? 18 : 14,
+                color: isSelected ? Colors.white : color,
               ),
+            ),
+            if (isSelected) ...[
               const SizedBox(width: AppSpacing.xs),
               Text(
                 label,
                 style: AppTextStyles.labelMedium.copyWith(
-                  color: isSelected ? Colors.white : AppColors.textPrimary,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
-          ),
+          ],
         ),
       ),
     );

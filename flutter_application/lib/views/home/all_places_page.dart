@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../providers/place_provider.dart';
 import '../../models/place.dart';
 import '../../utils/app_styles.dart';
 import '../../widgets/empty_state.dart';
+import '../../widgets/shimmer_loading.dart';
 import '../../utils/navigation.dart';
 import 'widgets/place_card.dart';
 import 'widgets/search_bat.dart' as custom;
@@ -39,21 +42,34 @@ class _AllPlacesPageState extends State<AllPlacesPage> {
     context.read<PlaceProvider>().searchByName(query);
   }
 
-  Widget _buildViewModeButton(ViewMode mode, IconData icon) {
+  Widget _buildViewModeButton(ViewMode mode, IconData icon, bool isDark) {
     final isSelected = _viewMode == mode;
-    return IconButton(
-      onPressed: () => setState(() => _viewMode = mode),
-      icon: Icon(icon),
-      color: isSelected ? AppColors.primary : AppColors.textMuted,
-      iconSize: 22,
+    return GestureDetector(
+      onTap: () => setState(() => _viewMode = mode),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppColors.primary.withValues(alpha: 0.1)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(AppRadius.sm),
+        ),
+        child: Icon(
+          icon,
+          color: isSelected
+              ? AppColors.primary
+              : (isDark ? Colors.white54 : AppColors.textMuted),
+          size: 22,
+        ),
+      ),
     );
   }
 
-  Widget _buildPlacesList() {
+  Widget _buildPlacesList(bool isDark) {
     return Consumer<PlaceProvider>(
       builder: (context, provider, _) {
         if (provider.isLoading) {
-          // Skeleton list while loading
           return ListView.builder(
             padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.md,
@@ -63,7 +79,7 @@ class _AllPlacesPageState extends State<AllPlacesPage> {
             itemBuilder: (context, index) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                child: _buildSkeletonListItem(),
+                child: const ShimmerListItem(),
               );
             },
           );
@@ -74,12 +90,13 @@ class _AllPlacesPageState extends State<AllPlacesPage> {
             icon: Icons.search_off_rounded,
             title: 'Aucun lieu trouvé',
             message: 'Essayez de modifier vos critères de recherche',
-          );
+          ).animate().fadeIn(duration: 400.ms).scale();
         }
 
         switch (_viewMode) {
           case ViewMode.cards:
             return ListView.builder(
+              physics: const BouncingScrollPhysics(),
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.md,
                 vertical: AppSpacing.sm,
@@ -89,20 +106,27 @@ class _AllPlacesPageState extends State<AllPlacesPage> {
                 final place = provider.places[index];
                 return Padding(
                   padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                  child: PlaceCard(
-                    place: place,
-                    viewMode: _viewMode,
-                    onTap: () => Navigator.push(
-                      context,
-                      buildFadeSlideRoute(PlaceDetailsPage(place: place)),
-                    ),
-                  ),
+                  child:
+                      PlaceCard(
+                            place: place,
+                            viewMode: _viewMode,
+                            onTap: () => Navigator.push(
+                              context,
+                              buildFadeSlideRoute(
+                                PlaceDetailsPage(place: place),
+                              ),
+                            ),
+                          )
+                          .animate(delay: (index * 50).ms)
+                          .fadeIn(duration: 300.ms)
+                          .slideX(begin: 0.1),
                 );
               },
             );
 
           case ViewMode.grid:
             return GridView.builder(
+              physics: const BouncingScrollPhysics(),
               padding: const EdgeInsets.all(AppSpacing.md),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
@@ -114,18 +138,22 @@ class _AllPlacesPageState extends State<AllPlacesPage> {
               itemBuilder: (context, index) {
                 final place = provider.places[index];
                 return PlaceCard(
-                  place: place,
-                  viewMode: _viewMode,
-                  onTap: () => Navigator.push(
-                    context,
-                    buildFadeSlideRoute(PlaceDetailsPage(place: place)),
-                  ),
-                );
+                      place: place,
+                      viewMode: _viewMode,
+                      onTap: () => Navigator.push(
+                        context,
+                        buildFadeSlideRoute(PlaceDetailsPage(place: place)),
+                      ),
+                    )
+                    .animate(delay: (index * 50).ms)
+                    .fadeIn(duration: 300.ms)
+                    .scale(begin: const Offset(0.95, 0.95));
               },
             );
 
           case ViewMode.list:
             return ListView.builder(
+              physics: const BouncingScrollPhysics(),
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.md,
                 vertical: AppSpacing.sm,
@@ -134,13 +162,16 @@ class _AllPlacesPageState extends State<AllPlacesPage> {
               itemBuilder: (context, index) {
                 final place = provider.places[index];
                 return PlaceCard(
-                  place: place,
-                  viewMode: _viewMode,
-                  onTap: () => Navigator.push(
-                    context,
-                    buildFadeSlideRoute(PlaceDetailsPage(place: place)),
-                  ),
-                );
+                      place: place,
+                      viewMode: _viewMode,
+                      onTap: () => Navigator.push(
+                        context,
+                        buildFadeSlideRoute(PlaceDetailsPage(place: place)),
+                      ),
+                    )
+                    .animate(delay: (index * 40).ms)
+                    .fadeIn(duration: 300.ms)
+                    .slideX(begin: 0.05);
               },
             );
         }
@@ -148,71 +179,117 @@ class _AllPlacesPageState extends State<AllPlacesPage> {
     );
   }
 
-  Widget _buildSkeletonListItem() {
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
+      child: Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        body: SafeArea(
+          child: Column(
+            children: [
+              // Custom App Bar
+              _buildCustomAppBar(
+                isDark,
+              ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.2),
+
+              // Search bar
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.md,
+                  AppSpacing.md,
+                  AppSpacing.md,
+                  AppSpacing.sm,
+                ),
+                child: custom.SearchBar(onSearch: _onSearch),
+              ).animate().fadeIn(duration: 400.ms, delay: 100.ms),
+
+              // Category filter
+              CategoryFilter(
+                selectedCategory: _selectedCategory,
+                onCategorySelected: _onCategorySelected,
+              ).animate().fadeIn(duration: 400.ms, delay: 150.ms),
+
+              // View mode toggle and results count
+              _buildFilterBar(
+                isDark,
+              ).animate().fadeIn(duration: 400.ms, delay: 200.ms),
+
+              // Places list
+              Expanded(child: _buildPlacesList(isDark)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCustomAppBar(bool isDark) {
     return Container(
-      padding: const EdgeInsets.all(AppSpacing.sm),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        boxShadow: AppShadows.small,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
       ),
       child: Row(
         children: [
-          // Thumbnail skeleton
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: AppColors.secondary.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(AppRadius.sm),
+          // Back button
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.1)
+                    : AppColors.surface,
+                borderRadius: BorderRadius.circular(AppRadius.md),
+                boxShadow: isDark ? null : AppShadows.subtle,
+              ),
+              child: Icon(
+                Icons.arrow_back_rounded,
+                color: isDark ? Colors.white : AppColors.textPrimary,
+                size: 22,
+              ),
             ),
           ),
           const SizedBox(width: AppSpacing.md),
-          // Text skeletons
+
+          // Title
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  height: 14,
-                  width: 160,
-                  decoration: BoxDecoration(
-                    color: AppColors.textMuted.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(AppRadius.sm),
+                Text(
+                  'Découvrir',
+                  style: AppTextStyles.h3.copyWith(
+                    color: isDark ? Colors.white : AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: AppSpacing.sm),
-                Container(
-                  height: 10,
-                  width: 100,
-                  decoration: BoxDecoration(
-                    color: AppColors.textMuted.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(AppRadius.sm),
+                Text(
+                  'Explorez tous les lieux',
+                  style: AppTextStyles.labelSmall.copyWith(
+                    color: isDark ? Colors.white60 : AppColors.textMuted,
                   ),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                Row(
-                  children: [
-                    Container(
-                      height: 10,
-                      width: 60,
-                      decoration: BoxDecoration(
-                        color: AppColors.textMuted.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(AppRadius.full),
-                      ),
-                    ),
-                    const Spacer(),
-                    Container(
-                      height: 10,
-                      width: 40,
-                      decoration: BoxDecoration(
-                        color: AppColors.textMuted.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(AppRadius.full),
-                      ),
-                    ),
-                  ],
                 ),
               ],
+            ),
+          ),
+
+          // Sort button
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.1)
+                  : AppColors.surface,
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              boxShadow: isDark ? null : AppShadows.subtle,
+            ),
+            child: const Icon(
+              Icons.tune_rounded,
+              color: AppColors.primary,
+              size: 22,
             ),
           ),
         ],
@@ -220,65 +297,65 @@ class _AllPlacesPageState extends State<AllPlacesPage> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tous les lieux'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
+  Widget _buildFilterBar(bool isDark) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
       ),
-      body: Column(
-        children: [
-          // Search bar
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.md,
-              AppSpacing.md,
-              AppSpacing.md,
-              AppSpacing.sm,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.sm,
+        ),
+        decoration: BoxDecoration(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.05)
+              : AppColors.surface,
+          borderRadius: BorderRadius.circular(AppRadius.full),
+          boxShadow: isDark ? null : AppShadows.subtle,
+        ),
+        child: Row(
+          children: [
+            Consumer<PlaceProvider>(
+              builder: (context, provider, _) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                    vertical: AppSpacing.xs,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppRadius.full),
+                  ),
+                  child: Text(
+                    '${provider.places.length} lieux',
+                    style: AppTextStyles.labelMedium.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                );
+              },
             ),
-            child: custom.SearchBar(onSearch: _onSearch),
-          ),
-
-          // Category filter
-          CategoryFilter(
-            selectedCategory: _selectedCategory,
-            onCategorySelected: _onCategorySelected,
-          ),
-
-          // View mode toggle and results count
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.md,
-              vertical: AppSpacing.sm,
+            const Spacer(),
+            _buildViewModeButton(
+              ViewMode.cards,
+              Icons.view_agenda_rounded,
+              isDark,
             ),
-            child: Row(
-              children: [
-                Consumer<PlaceProvider>(
-                  builder: (context, provider, _) {
-                    return Text(
-                      '${provider.places.length} lieux',
-                      style: AppTextStyles.labelMedium,
-                    );
-                  },
-                ),
-                const Spacer(),
-                _buildViewModeButton(
-                  ViewMode.cards,
-                  Icons.view_agenda_outlined,
-                ),
-                _buildViewModeButton(ViewMode.grid, Icons.grid_view_outlined),
-                _buildViewModeButton(ViewMode.list, Icons.view_list_outlined),
-              ],
+            _buildViewModeButton(
+              ViewMode.grid,
+              Icons.grid_view_rounded,
+              isDark,
             ),
-          ),
-
-          // Places list
-          Expanded(child: _buildPlacesList()),
-        ],
+            _buildViewModeButton(
+              ViewMode.list,
+              Icons.view_list_rounded,
+              isDark,
+            ),
+          ],
+        ),
       ),
     );
   }

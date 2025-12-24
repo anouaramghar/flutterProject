@@ -8,6 +8,7 @@ enum PlaceCategory {
   montagne,
   jardin,
   ville,
+
   /// Fallback when the category string is unknown or missing.
   other,
 }
@@ -75,8 +76,8 @@ class Place {
   final double latitude;
   final double longitude;
   final double rating;
-  final double? price;     
-  final String? hours;   
+  final double? price;
+  final String? hours;
 
   Place({
     required this.id,
@@ -103,12 +104,11 @@ class Place {
       latitude: json['lat'].toDouble(),
       longitude: json['lng'].toDouble(),
       rating: (json['rating'] ?? 0).toDouble(),
-      price: json['price'] != null ? json['price'].toDouble() : null,
+      price: json['price']?.toDouble(),
       hours: json['hours'],
     );
   }
 
- 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
